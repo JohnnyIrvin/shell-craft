@@ -1,0 +1,9 @@
+# Ignore Virtualenv
+venv/
+.venv/
+
+# Ignore Cache
+__pycache__/
+
+# Ignore Config
+config.json
