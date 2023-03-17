@@ -2,6 +2,12 @@
 
 Project for generating shell commands using OpenAI models.
 
+## How to install
+
+1. Clone the repository
+2. Install the requirements using `pip install -r requirements.txt`
+3. Smile, life is good.
+
 ## How to use
 
 1. Create a file called `config.json` and put your OpenAI API key in it.
