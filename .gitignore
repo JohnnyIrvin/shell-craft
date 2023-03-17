@@ -7,3 +7,8 @@ __pycache__/
 
 # Ignore Config
 config.json
+
+# Ignore Build
+dist/
+*.egg-info/
+build/
