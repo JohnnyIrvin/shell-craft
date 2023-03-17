@@ -4,29 +4,35 @@ Project for generating shell commands using OpenAI models.
 
 ## How to install
 
+1. `pip install shell-craft`
+2. Create a file called `config.json` and put your OpenAI API key in it. (See below)
+
+or
+
 1. Clone the repository
 2. Install the requirements using `pip install -r requirements.txt`
-3. Smile, life is good.
+3. `pip install .`
+4. Create a file called `config.json` and put your OpenAI API key in it. (See below)
+
 
 ## How to use
-
-1. Create a file called `config.json` and put your OpenAI API key in it.
+`shell-craft <win:optional> <description>` - This will generate a shell command for you based on the description you provide. If you provide the `win` argument, it will generate a powershell command. Otherwise, it will generate a bash command.
 
 Example
+```
+shell-craft This command will print the current date and time
+date
+```
+
+## Configuration file
+
+config.json
 ```
 {
     "openai_api_key": "<your secret key>"
 }
 ```
 
-2. Run `chmod +x ai.py` to make the script executable.
-3. Run `./ai.py <description of command to create>`
-
-Example
-```
-./ai.py This command will print the current date and time
-date
-```
 
 ## License
 
