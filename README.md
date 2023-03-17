@@ -1,5 +1,7 @@
 # Shell Craft
 
+[![PyPI version](https://img.shields.io/pypi/v/openai-shell-craft?color=green&label=PyPI)](https://pypi.org/project/openai-shell-craft/)
+
 Project for generating shell commands using OpenAI models.
 
 ## How to install
