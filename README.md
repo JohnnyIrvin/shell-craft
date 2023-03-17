@@ -31,3 +31,9 @@ date
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+* [OpenAI](https://openai.com/) for their language models and API.
+* [Joel Fourhman](https://github.com/joelfourhman) for the initial idea, the challenge, and the project name.
+* [Chase Montgomery](https://github.com/BLuFeNiX) for testing, feedback, and estimated time savings vs manual implementation.
