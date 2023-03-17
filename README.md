@@ -4,7 +4,7 @@ Project for generating shell commands using OpenAI models.
 
 ## How to install
 
-1. `pip install shell-craft`
+1. `pip install openai-shell-craft`
 2. Create a file called `config.json` and put your OpenAI API key in it. (See below)
 
 or
