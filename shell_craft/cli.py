@@ -18,24 +18,60 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+import argparse
 import json
 import os
-from sys import argv
 
+import shell_craft.prompts as prompts
 from shell_craft import Service
 from shell_craft.factories import PromptFactory
+
+parser = argparse.ArgumentParser(
+    prog="shell_craft",
+    description="Prompt the OpenAI API for a response."
+)
+parser.add_argument(
+    "prompt_type",
+    type=str,
+    choices=[
+        prompt.removesuffix('_PROMPT').lower()
+        for prompt in dir(prompts)
+        if prompt.endswith("PROMPT")
+    ],
+    help="The type of prompt to use."
+)
+parser.add_argument(
+    "human_request",
+    type=str,
+    nargs="+",
+    help="The input to prompt the API with."
+)
+parser.add_argument(
+    "--api-key",
+    type=str,
+    help="The OpenAI API key to use."
+)
+
+args = parser.parse_args()
 
 
 def get_api_key() -> str:
     """
-    Get the OpenAI API key from the environment or config file.
+    Get the OpenAI API key from the environment, config file, or command line.
+
+    Priority is given to the command line argument, then the environment variable,
+    then the config file.
 
     Raises:
         ValueError: If no API key is found.
 
     Returns:
         str: The API key.
-    """    
+    """
+    api_key = args.api_key
+    if api_key:
+        return api_key
+    
     api_key = os.environ.get("OPENAI_API_KEY")
     if api_key:
         return api_key
@@ -52,15 +88,9 @@ def get_api_key() -> str:
     
     raise ValueError("No API key found")
 
-def main():
-    if len(argv) < 3:
-        print("Usage: <program_name> <prompt type> <human request>")
-        return
-    
-    prompt_type, human_request = argv[1], " ".join(argv[2:])
-
+def main():    
     try:
-        prompt = PromptFactory.get_prompt(prompt_type)
+        prompt = PromptFactory.get_prompt(args.prompt_type)
     except ValueError:
         print("Invalid prompt type")
         return
@@ -70,6 +100,6 @@ def main():
             api_key=get_api_key(),
             prompt=prompt
         ).query(
-            message=human_request
+            message=' '.join(args.human_request)
         )
     )
