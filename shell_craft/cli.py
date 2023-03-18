@@ -22,25 +22,24 @@ import json
 from sys import argv
 
 from shell_craft import Service
+from shell_craft.factories import PromptFactory
 
 
 def main():
-    if len(argv) < 2:
-        print("Usage: <program_name> <win:optional> <command>")
-        exit(1)
+    if len(argv) < 3:
+        print("Usage: <program_name> <prompt type> <human request>")
+        return
+    
+    prompt_type, human_request = argv[1], " ".join(argv[2:])
 
     with open("config.json") as f:
         config = json.load(f)
 
-    is_windows = True if argv[1] == "win" else False
-
-    prompt = "You are a Linux terminal. You only reply with valid bash, and nothing else. Do not write explanations. You are bash. You will receive a description and return a bash command."
-    if is_windows:
-        argv.pop(1)
-        prompt = "You are Windows powershell. You only reply with valid powershell, and nothing else. Do not write explanations. You are powershell. You will receive a description and return a powershell command."
-        if len(argv) < 2:
-            print("Usage: <program_name> <win:optional> <command>")
-            exit(1)
+    try:
+        prompt = PromptFactory.get_prompt(prompt_type)
+    except ValueError:
+        print("Invalid prompt type")
+        return
 
     api_key = config.get("openai_api_key")
-    print(Service(api_key, prompt).query(" ".join(argv[1:])))
+    print(Service(api_key, prompt).query(human_request))
