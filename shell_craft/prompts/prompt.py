@@ -19,9 +19,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from dataclasses import dataclass, field
-from typing import TypeAlias
 
-MODEL_MESSAGE: TypeAlias = list[dict[str, str]]
+MODEL_MESSAGE = list[dict[str, str]]
 
 @dataclass(frozen=True)
 class Prompt:
