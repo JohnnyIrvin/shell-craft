@@ -20,22 +20,24 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import openai
 
+from shell_craft.prompts import Prompt
+
 
 class Service:
-    def __init__(self, api_key: str, prompt: str, model: str = "gpt-3.5-turbo"):
+    def __init__(self, api_key: str, prompt: Prompt, model: str = "gpt-3.5-turbo"):
         """
         Initialize a new Service instance.
 
         Args:
             api_key (str): The OpenAI API key to use.
-            prompt (str): Informs the model how to act when generating a response.
+            prompt (Prompt): Informs the model how to act when generating a response.
             model (str, optional):
                 The model to use when generating a response. Defaults to "gpt-3.5-turbo".
                 Check out the OpenAI docs for more information on models and their
                 pricing.
         """
         self._api_key: str = api_key
-        self._prompt: str = prompt
+        self._prompt: Prompt = prompt
         self._model: str = model
 
     def query(self, message: str) -> str:
@@ -51,11 +53,7 @@ class Service:
         return openai.ChatCompletion.create(
             api_key=self._api_key,
             model=self._model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": self._prompt,
-                },
+            messages=self._prompt.messages + [
                 {
                     "role": "user",
                     "content": message

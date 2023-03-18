@@ -18,28 +18,13 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import json
-from sys import argv
+from .prompt import Prompt
 
-from shell_craft import Service
-from shell_craft.factories import PromptFactory
-
-
-def main():
-    if len(argv) < 3:
-        print("Usage: <program_name> <prompt type> <human request>")
-        return
-    
-    prompt_type, human_request = argv[1], " ".join(argv[2:])
-
-    with open("config.json") as f:
-        config = json.load(f)
-
-    try:
-        prompt = PromptFactory.get_prompt(prompt_type)
-    except ValueError:
-        print("Invalid prompt type")
-        return
-
-    api_key = config.get("openai_api_key")
-    print(Service(api_key, prompt).query(human_request))
+BASH_PROMPT = Prompt(
+    content=" ".join("""
+        You are bash.
+        You reply with valid bash, nothing else.
+        No explanations.
+        You receive a description and return a bash command.
+    """.split()),
+)

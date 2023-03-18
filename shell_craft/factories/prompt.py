@@ -18,28 +18,34 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import json
-from sys import argv
-
-from shell_craft import Service
-from shell_craft.factories import PromptFactory
+from shell_craft.prompts import Prompt
 
 
-def main():
-    if len(argv) < 3:
-        print("Usage: <program_name> <prompt type> <human request>")
-        return
-    
-    prompt_type, human_request = argv[1], " ".join(argv[2:])
+class PromptFactory:
+    @staticmethod
+    def get_prompt(prompt_type: str) -> Prompt:
+        """
+        Generates a new prompt object based on the prompt type.
 
-    with open("config.json") as f:
-        config = json.load(f)
+        Args:
+            prompt_type (str): A string representing the prompt type.
 
-    try:
-        prompt = PromptFactory.get_prompt(prompt_type)
-    except ValueError:
-        print("Invalid prompt type")
-        return
+        Raises:
+            ValueError: If the prompt type is not supported.
 
-    api_key = config.get("openai_api_key")
-    print(Service(api_key, prompt).query(human_request))
+        Returns:
+            Prompt: A new prompt object.
+        """        
+        import shell_craft.prompts as prompts
+
+        available_prompts = [
+            prompt.removesuffix('_PROMPT').casefold()
+            for prompt in dir(prompts)
+            if prompt.endswith("_PROMPT")
+        ]
+
+        if prompt_type.casefold() in available_prompts:
+            return getattr(prompts, f"{prompt_type.upper()}_PROMPT")
+
+
+        raise ValueError(f"Unknown prompt type: {prompt_type}")
