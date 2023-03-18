@@ -20,11 +20,17 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from .prompt import Prompt
 
-POWERSHELL_PROMPT = Prompt(
-    content=" ".join("""
-        You are powershell.
-        You reply with valid powershell, nothing else.
-        No explanations.
-        You receive descriptions and return a powershell command.
-    """.split()),
-)
+def _generate_prompt(language: str) -> Prompt:
+    return Prompt(
+        content=" ".join(f"""
+            You are {language}.
+            You reply with valid {language}, nothing else.
+            No explanations.
+            You receive descriptions and return {language}.
+        """.split()),
+    )
+
+
+BASH_PROMPT = _generate_prompt("Bash")
+POWERSHELL_PROMPT = _generate_prompt("PowerShell")
+PYTHON_PROMPT = _generate_prompt("Python")
