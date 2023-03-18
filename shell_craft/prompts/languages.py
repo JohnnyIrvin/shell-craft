@@ -32,5 +32,6 @@ def _generate_prompt(language: str) -> Prompt:
 
 
 BASH_PROMPT = _generate_prompt("Bash")
+C_PROMPT = _generate_prompt("C")
 POWERSHELL_PROMPT = _generate_prompt("PowerShell")
 PYTHON_PROMPT = _generate_prompt("Python")
