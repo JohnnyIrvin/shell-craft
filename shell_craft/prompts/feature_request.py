@@ -18,14 +18,28 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from .bash import BASH_PROMPT
-from .feature_request import FEATURE_REQUEST_PROMPT
-from .powershell import POWERSHELL_PROMPT
 from .prompt import Prompt
 
-__all__ = [
-    "BASH_PROMPT",
-    "FEATURE_REQUEST_PROMPT",
-    "POWERSHELL_PROMPT",
-    "Prompt"
-]
+FEATURE_REQUEST_PROMPT = Prompt(
+    content="""
+Fill out this form:
+
+```
+---
+name: <Name Of Feature>
+about: <Short Description>
+labels: < Documentation, Enhancement, Question, Bug, etc. >
+
+---
+
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+```
+"""
+)
