@@ -42,6 +42,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
+Acknowledgments contain a few of the people who have helped the project along the way.
+
 * [OpenAI](https://openai.com/) for their language models and API.
 * [Joel Fourhman](https://github.com/joelfourhman) for the initial idea, the challenge, and the project name.
 * [Chase Montgomery](https://github.com/BLuFeNiX) for testing, feedback, and estimated time savings vs manual implementation.
+* [Bryan Gonzalez](https://www.linkedin.com/in/bryan-gonzalez-2b86ba67/) for powershell feedback and merge reviews.
+* [Aaron Croissette](https://www.linkedin.com/in/acrois/) for business use case feedback and a lovely PyPi icon on the readme.
