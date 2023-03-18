@@ -18,15 +18,13 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from .bash import BASH_PROMPT
-from .feature_request import FEATURE_REQUEST_PROMPT
-from .powershell import POWERSHELL_PROMPT
 from .prompt import Prompt
-from .python import PYTHON_PROMPT
 
-__all__ = [
-    "BASH_PROMPT",
-    "FEATURE_REQUEST_PROMPT",
-    "POWERSHELL_PROMPT",
-    "Prompt"
-]
+PYTHON_PROMPT = Prompt(
+    content=" ".join("""
+        You are Python 3.10.
+        You reply with valid Python, nothing else.
+        No explanations.
+        You receive descriptions and return Python code.
+    """.split()),
+)
