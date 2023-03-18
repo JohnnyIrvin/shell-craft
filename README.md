@@ -7,14 +7,13 @@ Project for generating shell commands using OpenAI models.
 ## How to install
 
 1. `pip install openai-shell-craft`
-2. Create a file called `config.json` and put your OpenAI API key in it. (See below)
 
 ## Command Line Interface
 
 All command line usage follows the following format:
 
-```shell
-shell-craft <prompt type> <human request>
+```bash
+shell-craft <prompt type> "<human request>"
 ```
 
 Shell Craft supports many prompt types, such as:
@@ -22,23 +21,29 @@ Shell Craft supports many prompt types, such as:
 * Powershell
 * Feature Request
 
+For additional help you can run:
+
+```bash
+shell-craft --help
+```
+
 ### Bash Example
 
 ```bash
-shell_craft bash find all swp files and delete them if theyre not in use
+shell_craft bash "find all swp files and delete them if theyre not in use"
 find . -name '*.swp' -type f ! -exec fuser -s {} \; -delete
 ```
 
 ### Powershell Example
 ```bash
-$ shell_craft powershell remove all files older than 30 days
+$ shell_craft powershell "remove all files older than 30 days"
 Get-ChildItem -Path "C:\your\path" -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30)} | Remove-Item -Force
 ```
 
 ### Feature Request Example
 
 ```bash
-$ shell_craft feature_request add an icon that shows the total test coverage
+$ shell_craft feature_request "add an icon that shows the total test coverage"
 ---
 
 name: Add Total Test Coverage Icon
@@ -75,9 +80,24 @@ Server(
 )
 ```
 
-## Configuration file
+## API Key
 
-config.json
+Shell Craft uses the OpenAI API to generate the shell commands. You will need to create an account with OpenAI and get an API key. Once you have your API key, you can pass it to Shell Craft via command line argument, environment variable, or config file.
+
+Command Line Argument:
+```bash
+shell_craft prompt_type "human_request" --api-key API_KEY
+```
+
+Where prompt_type is the type of prompt you want to use, such as bash, powershell, or feature_request. human_request is the human readable request you want to convert to a shell command. API_KEY is your OpenAI API key.
+
+Environment Variable:
+```bash
+export OPENAI_API_KEY=<your secret key>
+shell_craft bash "list all files in directory"
+```
+
+Configuration file - config.json:
 ```
 {
     "openai_api_key": "<your secret key>"
