@@ -19,11 +19,38 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import json
+import os
 from sys import argv
 
 from shell_craft import Service
 from shell_craft.factories import PromptFactory
 
+
+def get_api_key() -> str:
+    """
+    Get the OpenAI API key from the environment or config file.
+
+    Raises:
+        ValueError: If no API key is found.
+
+    Returns:
+        str: The API key.
+    """    
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if api_key:
+        return api_key
+
+    if not os.path.exists("config.json"):
+        raise ValueError("No API key found")
+    
+    with open("config.json") as f:
+        config = json.load(f)
+
+    api_key = config.get("openai_api_key")
+    if api_key:
+        return api_key
+    
+    raise ValueError("No API key found")
 
 def main():
     if len(argv) < 3:
@@ -32,14 +59,17 @@ def main():
     
     prompt_type, human_request = argv[1], " ".join(argv[2:])
 
-    with open("config.json") as f:
-        config = json.load(f)
-
     try:
         prompt = PromptFactory.get_prompt(prompt_type)
     except ValueError:
         print("Invalid prompt type")
         return
-
-    api_key = config.get("openai_api_key")
-    print(Service(api_key, prompt).query(human_request))
+    
+    print(
+        Service(
+            api_key=get_api_key(),
+            prompt=prompt
+        ).query(
+            message=human_request
+        )
+    )
