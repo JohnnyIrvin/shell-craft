@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Generate shell commands using OpenAI models."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
