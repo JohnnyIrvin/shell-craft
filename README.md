@@ -20,17 +20,41 @@ shell-craft <prompt type> <human request>
 Shell Craft supports many prompt types, such as:
 * Bash
 * Powershell
+* Feature Request
 
-Bash Example
+### Bash Example
+
 ```bash
 shell_craft bash find all swp files and delete them if theyre not in use
 find . -name '*.swp' -type f ! -exec fuser -s {} \; -delete
 ```
 
-Powershell Example
+### Powershell Example
 ```bash
 $ shell_craft powershell remove all files older than 30 days
 Get-ChildItem -Path "C:\your\path" -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30)} | Remove-Item -Force
+```
+
+### Feature Request Example
+
+```bash
+$ shell_craft feature_request add an icon that shows the total test coverage
+---
+
+name: Add Total Test Coverage Icon
+about: Add an icon that shows the total test coverage
+labels: Enhancement
+
+---
+
+**Is your feature request related to a problem? Please describe.**
+There is currently no easy way to visualize the total test coverage for a project.
+
+**Describe the solution you'd like**
+I would like to have an icon on the project dashboard that, when clicked, displays the total test coverage for the project. This will allow developers to easily monitor and improve the overall test coverage for the project.
+
+**Describe alternatives you've considered**
+As an alternative, I have considered adding the total test coverage to the project README file. However, this solution would not be as easily accessible as an icon on the project dashboard.
 ```
 
 ## Python API
