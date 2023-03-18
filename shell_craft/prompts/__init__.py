@@ -20,7 +20,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from .feature_request import FEATURE_REQUEST_PROMPT
 from .languages import (BASH_PROMPT, C_PROMPT, C_SHARP_PROMPT, JAVA_PROMPT,
-                        POWERSHELL_PROMPT, PYTHON_PROMPT)
+                        JAVASCRIPT_PROMPT, POWERSHELL_PROMPT, PYTHON_PROMPT)
 from .prompt import Prompt
 
 __all__ = [
@@ -28,6 +28,7 @@ __all__ = [
     "C_PROMPT",
     "C_SHARP_PROMPT",
     "JAVA_PROMPT",
+    "JAVASCRIPT_PROMPT",
     "FEATURE_REQUEST_PROMPT",
     "POWERSHELL_PROMPT",
     "PYTHON_PROMPT",

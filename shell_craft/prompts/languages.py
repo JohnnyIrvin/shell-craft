@@ -20,6 +20,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from .prompt import Prompt
 
+
 def _generate_prompt(language: str) -> Prompt:
     return Prompt(
         content=" ".join(f"""
@@ -37,3 +38,4 @@ C_SHARP_PROMPT = _generate_prompt("C#")
 POWERSHELL_PROMPT = _generate_prompt("PowerShell")
 PYTHON_PROMPT = _generate_prompt("Python")
 JAVA_PROMPT = _generate_prompt("Java")
+JAVASCRIPT_PROMPT = _generate_prompt("JavaScript")
