@@ -62,6 +62,12 @@ parser.add_argument(
     type=str,
     help="The OpenAI API key to use."
 )
+parser.add_argument(
+    "--model",
+    type=str,
+    default="gpt-3.5-turbo"
+)
+
 args = parser.parse_args(
     args=sys.argv[1:] + get_from_stdin() if not sys.stdin.isatty() else sys.argv[1:]
 )
@@ -109,7 +115,8 @@ def main():
     print(
         Service(
             api_key=get_api_key(),
-            prompt=prompt
+            prompt=prompt,
+            model=args.model
         ).query(
             message=' '.join(args.human_request)
         )
