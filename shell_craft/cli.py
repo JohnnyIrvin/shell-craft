@@ -21,10 +21,21 @@
 import argparse
 import json
 import os
+import sys
 
 import shell_craft.prompts as prompts
 from shell_craft import Service
 from shell_craft.factories import PromptFactory
+
+def get_from_stdin() -> str:
+    """
+    Get input from stdin.
+
+    Returns:
+        str: The input.
+    """
+    sys.stdin.flush()
+    return sys.stdin.readlines()
 
 parser = argparse.ArgumentParser(
     prog="shell_craft",
@@ -44,16 +55,16 @@ parser.add_argument(
     "human_request",
     type=str,
     nargs="+",
-    help="The input to prompt the API with."
+    help="The input to prompt the API with.",
 )
 parser.add_argument(
     "--api-key",
     type=str,
     help="The OpenAI API key to use."
 )
-
-args = parser.parse_args()
-
+args = parser.parse_args(
+    args=sys.argv[1:] + get_from_stdin() if not sys.stdin.isatty() else sys.argv[1:]
+)
 
 def get_api_key() -> str:
     """
