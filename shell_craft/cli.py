@@ -22,10 +22,27 @@ import argparse
 import json
 import os
 import sys
+import psutil
 
 import shell_craft.prompts as prompts
 from shell_craft import Service
 from shell_craft.factories import PromptFactory
+
+def get_calling_shell() -> str:
+    """
+    Get the name of the shell that called this script. This is used to determine
+    the default prompt type. If the calling shell is PowerShell or pwsh, it is converted
+    to "powershell" to match the prompt type. If the calling shell is not recognized,
+    the default prompt type is "bash".
+
+    Returns:
+        str: The name of the shell.
+    """
+    return (
+        "powershell" 
+        if psutil.Process(os.getppid()).name() in 
+        ["pwsh", "powershell"] else "bash"
+    )
 
 def get_from_stdin() -> str:
     """
@@ -42,19 +59,21 @@ parser = argparse.ArgumentParser(
     description="Prompt the OpenAI API for a response."
 )
 parser.add_argument(
-    "prompt_type",
+    "--prompt_type",
     type=str,
     choices=[
         prompt.removesuffix('_PROMPT').lower()
         for prompt in dir(prompts)
         if prompt.endswith("PROMPT")
     ],
-    help="The type of prompt to use."
+    help="The type of prompt to use.",
+    nargs='?',
+    default=get_calling_shell()
 )
 parser.add_argument(
     "human_request",
     type=str,
-    nargs="+",
+    nargs="*",
     help="The input to prompt the API with.",
 )
 parser.add_argument(
