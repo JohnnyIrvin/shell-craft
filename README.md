@@ -81,23 +81,35 @@ Server(
 ```
 
 ## API Key
+To obtain an API key from the OpenAI platform, follow these steps:
 
+Go to https://platform.openai.com/account/api-keys in your web browser.
+
+Log in to your OpenAI account or create a new account if you don't have one.
+
+Click the "Create new secret key" button.
+
+Copy the key that is generated for you.
+
+Decide how you want to use the key:
+
+Note that API keys are sensitive information and should be kept confidential. Make sure you don't share your API key with anyone who shouldn't have access to it.
 Shell Craft uses the OpenAI API to generate the shell commands. You will need to create an account with OpenAI and get an API key. Once you have your API key, you can pass it to Shell Craft via command line argument, environment variable, or config file.
 
-Command Line Argument:
+Option 1: Command Line Argument:
 ```bash
 shell_craft prompt_type "human_request" --api-key API_KEY
 ```
 
 Where prompt_type is the type of prompt you want to use, such as bash, powershell, or feature_request. human_request is the human readable request you want to convert to a shell command. API_KEY is your OpenAI API key.
 
-Environment Variable:
+Option 2: Environment Variable:
 ```bash
 export OPENAI_API_KEY=<your secret key>
 shell_craft bash "list all files in directory"
 ```
 
-Configuration file - config.json:
+Option 3 (Recommended): Configuration file - config.json:
 ```
 {
     "openai_api_key": "<your secret key>"
