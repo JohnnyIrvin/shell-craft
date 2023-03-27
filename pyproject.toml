@@ -17,7 +17,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "openai"
+    "openai",
+    "psutil",
 ]
 
 [project.urls]
