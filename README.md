@@ -13,8 +13,12 @@ Project for generating shell commands using OpenAI models.
 All command line usage follows the following format:
 
 ```bash
-shell-craft <prompt type> "<human request>"
+$ shell-craft <human request>
 ```
+
+By default, Shell Craft will atempt to determine the prompt type based on the current shell (Powershell or Bash).
+
+```bash
 
 Shell Craft supports many prompt types, such as:
 * Bash
@@ -24,26 +28,26 @@ Shell Craft supports many prompt types, such as:
 For additional help you can run:
 
 ```bash
-shell-craft --help
+$ shell-craft --help
 ```
 
 ### Bash Example
 
 ```bash
-shell_craft bash "find all swp files and delete them if theyre not in use"
+$ shell-craft --prompt bash "find all swp files and delete them if theyre not in use"
 find . -name '*.swp' -type f ! -exec fuser -s {} \; -delete
 ```
 
 ### Powershell Example
 ```bash
-$ shell_craft powershell "remove all files older than 30 days"
+$ shell-craft --prompt powershell "remove all files older than 30 days"
 Get-ChildItem -Path "C:\your\path" -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30)} | Remove-Item -Force
 ```
 
 ### Feature Request Example
 
 ```bash
-$ shell_craft feature_request "add an icon that shows the total test coverage"
+$ shell_craft --prompt feature_request "add an icon that shows the total test coverage"
 ---
 
 name: Add Total Test Coverage Icon
