@@ -76,7 +76,7 @@ import os
 from shell_craft import Service
 from shell_craft.prompts import BASH_PROMPT
 
-Server(
+Service(
     api_key = os.environ.get("OPENAI_API_KEY"),
     prompt = BASH_PROMPT,
 ).query(
