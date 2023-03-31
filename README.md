@@ -10,6 +10,13 @@ Generating shell commands and code using natural language models (OpenAI ChatGPT
 pip install openai-shell-craft
 ```
 
+## Build from Docker and Run
+
+```sh
+docker build . --tag shell_craft --target shell_craft
+docker run shell_craft --help
+```
+
 ## Command Line Interface
 
 All command line usage follows the following format:
