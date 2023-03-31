@@ -23,12 +23,12 @@ from shell_craft.prompts import Prompt
 
 class PromptFactory:
     @staticmethod
-    def get_prompt(prompt_type: str) -> Prompt:
+    def get_prompt(prompt: str) -> Prompt:
         """
         Generates a new prompt object based on the prompt type.
 
         Args:
-            prompt_type (str): A string representing the prompt type.
+            prompt (str): A string representing the prompt type.
 
         Raises:
             ValueError: If the prompt type is not supported.
@@ -44,8 +44,8 @@ class PromptFactory:
             if prompt.endswith("_PROMPT")
         ]
 
-        if prompt_type.casefold() in available_prompts:
-            return getattr(prompts, f"{prompt_type.upper()}_PROMPT")
+        if prompt.casefold() in available_prompts:
+            return getattr(prompts, f"{prompt.upper()}_PROMPT")
 
 
-        raise ValueError(f"Unknown prompt type: {prompt_type}")
+        raise ValueError(f"Unknown prompt type: {prompt}")
