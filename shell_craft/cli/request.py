@@ -23,7 +23,7 @@ from argparse import ArgumentParser
 
 def add_arguments(parser: ArgumentParser):
     """
-    Adds 'human_request' argument to the parser. This argument is used to
+    Adds 'request' argument to the parser. This argument is used to
     specify the input to prompt the API with. This argument is required,
     however, it can be piped in from another command or from a file.
 
@@ -31,7 +31,7 @@ def add_arguments(parser: ArgumentParser):
         parser (ArgumentParser): The parser to add the argument to.
     """    
     parser.add_argument(
-        "human_request",
+        "request",
         type=str,
         nargs="*",
     )
