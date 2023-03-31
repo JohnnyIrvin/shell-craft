@@ -50,7 +50,7 @@ def get_calling_shell() -> str:
 
 def add_arguments(parser: ArgumentParser):
     """
-    Adds '--prompt_type' as an argument to the parser. The choices are the names of
+    Adds '--prompt' as an argument to the parser. The choices are the names of
     the prompts in the prompts module, without the '_PROMPT' suffix, and converted to
     lowercase. The default is the name of the shell that called this script.
 
@@ -58,7 +58,7 @@ def add_arguments(parser: ArgumentParser):
         parser (ArgumentParser): The parser to add the argument to.
     """    
     parser.add_argument(
-        "--prompt_type",
+        "--prompt",
         type=str,
         choices=[
             prompt.removesuffix('_PROMPT').lower()

@@ -26,7 +26,7 @@ from .parser import PARSER, get_arguments
 
 def main():
     args = get_arguments(PARSER)
-    prompt = PromptFactory.get_prompt(args.prompt_type)
+    prompt = PromptFactory.get_prompt(args.prompt)
     
     print(
         Service(
