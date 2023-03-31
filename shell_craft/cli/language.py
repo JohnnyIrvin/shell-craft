@@ -18,33 +18,36 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from shell_craft import Service
+from argparse import ArgumentParser
 from shell_craft.factories import PromptFactory
+from shell_craft.prompts import languages
 
-from .parser import PARSER, get_arguments
+ARGUMENTS = {
+    'prompt': lambda x: PromptFactory.get_prompt(x) in languages.get_prompts()
+}
 
-
-def main():
+def add_arguments(parser: ArgumentParser):
     """
-    Main function that processes the command-line arguments and queries the
-    OpenAI API using shell_craft.
-    """
-    args = get_arguments(PARSER)
-    prompt = PromptFactory.get_prompt(args.prompt)
+    Adds 'request' argument to the parser. This argument is used to
+    specify the input to prompt the API with. This argument is required,
+    however, it can be piped in from another command or from a file.
 
-    if args.refactor:
-        prompt = prompt.refactoring
-    elif args.document:
-        prompt = prompt.documentation
-    elif args.test:
-        prompt = prompt.testing
-
-    print(
-        Service(
-            api_key=args.api_key,
-            prompt=prompt,
-            model=args.model
-        ).query(
-            message=' '.join(args.request)
-        )
+    Args:
+        parser (ArgumentParser): The parser to add the argument to.
+    """    
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument(
+        '--refactor',
+        action='store_true',
+        help='Refactor the code.'
+    )
+    group.add_argument(
+        '--document',
+        action='store_true',
+        help='Document the code.'
+    )
+    group.add_argument(
+        '--test',
+        action='store_true',
+        help='Test the code.'
     )

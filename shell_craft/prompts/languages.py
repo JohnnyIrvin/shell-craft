@@ -18,19 +18,68 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from dataclasses import dataclass
+from typing import Optional
+
 from .prompt import Prompt
 
 
-def _generate_prompt(language: str) -> Prompt:
-    return Prompt(
+@dataclass(frozen=True)
+class LanguagePrompt(Prompt):
+    refactoring: Optional[Prompt] = None
+    documentation: Optional[Prompt] = None
+    testing: Optional[Prompt] = None
+
+
+def _generate_prompt(language: str) -> LanguagePrompt:
+    return LanguagePrompt(
         content=" ".join(f"""
             You are {language}.
             You reply with valid {language}, nothing else.
             No explanations.
             You receive descriptions and return {language}.
         """.split()),
+        refactoring=Prompt(
+            content=" ".join(f"""
+                You receive {language} and return {language}.
+                You shorten the code.
+                You remove bugs.
+                You make the code more efficient.
+            """.split())
+        ),
+        documentation=Prompt(
+            content=" ".join(f"""
+                You receive {language} and return {language} with document strings.
+                You add documentation to each function.
+                You add documentation to each class.
+                You explain parameters and return values.
+                You run the code with the documentation in place.
+            """.split())
+        ),
+        testing=Prompt(
+            content=" ".join(f"""
+                You receive {language} and return {language} with tests.
+                You write tests for each function.
+                Tests are written in AAA (Arrange, Act, Assert) format.
+                You do not repeat yourself.
+                You do not return the original code.
+            """.split())
+        )
     )
 
+def get_prompts() -> list[LanguagePrompt]:
+    """
+    Returns all of the language prompts. This is used to generate the
+    language prompt choices. This is also used to define the exports.
+
+    Returns:
+        list[LanguagePrompt]: All of the language prompts.
+    """    
+    return [
+        prompt for prompt
+        in globals().values()
+        if isinstance(prompt, LanguagePrompt)
+    ]
 
 BASH_PROMPT = _generate_prompt("Bash")
 C_PROMPT = _generate_prompt("C")
@@ -40,3 +89,6 @@ POWERSHELL_PROMPT = _generate_prompt("PowerShell")
 PYTHON_PROMPT = _generate_prompt("Python")
 JAVA_PROMPT = _generate_prompt("Java")
 JAVASCRIPT_PROMPT = _generate_prompt("JavaScript")
+
+
+__all__ = get_prompts()
