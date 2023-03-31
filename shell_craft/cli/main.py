@@ -32,11 +32,11 @@ def main():
     args = get_arguments(PARSER)
     prompt = PromptFactory.get_prompt(args.prompt)
 
-    if args.refactor:
+    if getattr(args, "refactor", False):
         prompt = prompt.refactoring
-    elif args.document:
+    elif getattr(args, "document", False):
         prompt = prompt.documentation
-    elif args.test:
+    elif getattr(args, "test", False):
         prompt = prompt.testing
 
     print(
