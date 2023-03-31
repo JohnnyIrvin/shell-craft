@@ -79,6 +79,21 @@ Returns a PowerShell command:
 Get-ChildItem -Path "C:\your\path" -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30)} | Remove-Item -Force
 ```
 
+### Refactoring existing code
+```bash
+cat my_code.py | python -m shell_craft --prompt python --refactor
+```
+
+### Documenting existing code
+```bash
+cat my_code.py | python -m shell_craft --prompt python --document
+```
+
+### Generating tests for existing code
+```bash
+cat my_code.py | python -m shell_craft --prompt python --test
+```
+
 ### Feature Request Example
 
 Executing:
@@ -95,6 +110,8 @@ about: Add an icon that shows the total test coverage
 labels: Enhancement
 
 ---
+
+
 
 **Is your feature request related to a problem? Please describe.**
 There is currently no easy way to visualize the total test coverage for a project.
