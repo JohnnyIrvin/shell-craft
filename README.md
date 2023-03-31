@@ -31,7 +31,7 @@ uptime -p
 
 ## Prompt Types
 
-Shell Craft supports many different `--prompt_type` options. We have organized them into categories here only to aid in reference usage.
+Shell Craft supports many different `--prompt` options. We have organized them into categories here only to aid in reference usage.
 
 | Category      | Name                                                                  | Argument Value    |
 |---------------|-----------------------------------------------------------------------|-------------------|
@@ -45,7 +45,7 @@ Shell Craft supports many different `--prompt_type` options. We have organized t
 | Language      | [Go](https://go.dev/)                                                 | `go`              |
 | Template      | Feature Request                                                       | `feature_request` |
 
-When `--prompt_type` is not specified, Shell Craft will use `bash` unless PowerShell is used to call Shell Craft, then it uses `powershell`.
+When `--prompt` is not specified, Shell Craft will use `bash` unless PowerShell is used to call Shell Craft, then it uses `powershell`.
 
 ### Help Prompt
 
@@ -59,7 +59,7 @@ shell-craft --help
 
 Executing:
 ```bash
-shell-craft --prompt_type bash "find all swp files and delete them if theyre not in use"
+shell-craft --prompt bash "find all swp files and delete them if theyre not in use"
 ```
 
 Returns a Bash command:
@@ -71,7 +71,7 @@ find . -name '*.swp' -type f ! -exec fuser -s {} \; -delete
 
 Executing:
 ```ps1
-shell-craft --prompt_type powershell "remove all files older than 30 days"
+shell-craft --prompt powershell "remove all files older than 30 days"
 ```
 
 Returns a PowerShell command:
@@ -83,7 +83,7 @@ Get-ChildItem -Path "C:\your\path" -Recurse | Where-Object { $_.LastWriteTime -l
 
 Executing:
 ```sh
-shell_craft --prompt_type feature_request "add an icon that shows the total test coverage"
+shell_craft --prompt feature_request "add an icon that shows the total test coverage"
 ```
 
 Returns Markdown:
