@@ -21,7 +21,7 @@
 from argparse import ArgumentParser
 from os import getppid
 
-from psutil import Process
+from psutil import NoSuchProcess, Process
 
 import shell_craft.prompts as prompts
 
@@ -33,14 +33,19 @@ def get_calling_shell() -> str:
     to "powershell" to match the prompt type. If the calling shell is not recognized,
     the default prompt type is "bash".
 
+    If the calling shell cannot be determined, the default prompt type is "bash".
+
     Returns:
         str: The name of the shell.
     """
-    return (
-        "powershell" 
-        if Process(getppid()).name() in 
-        ["pwsh", "powershell"] else "bash"
-    )
+    try:
+        return (
+            "powershell" 
+            if Process(getppid()).name() in 
+            ["pwsh", "powershell"] else "bash"
+        )
+    except NoSuchProcess:
+        return "bash"
 
 
 def add_arguments(parser: ArgumentParser):
