@@ -15,7 +15,7 @@ pip install openai-shell-craft
 All command line usage follows the following format:
 
 ```bash
-shell-craft <human request>
+shell-craft <request>
 ```
 
 ### Quick Start
