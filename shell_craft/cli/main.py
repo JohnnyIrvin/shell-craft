@@ -34,6 +34,6 @@ def main():
             prompt=prompt,
             model=args.model
         ).query(
-            message=' '.join(args.human_request)
+            message=' '.join(args.request)
         )
     )
