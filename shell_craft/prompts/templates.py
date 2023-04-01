@@ -29,7 +29,6 @@ Fill out this form:
 name: <Name Of Feature>
 about: <Short Description>
 labels: < Documentation, Enhancement, Question, Bug, etc. >
-
 ---
 
 **Is your feature request related to a problem? Please describe.**
@@ -41,5 +40,28 @@ A clear and concise description of what you want to happen.
 **Describe alternatives you've considered**
 A clear and concise description of any alternative solutions or features you've considered.
 ```
-"""
-)
+""")
+
+BUG_REPORT_PROMPT = Prompt(
+    content="""
+Fill out this form with as much detail as possible with the provided information:
+```
+---
+name: <Name Of Bug>
+about: <Short Description>
+labels: < Documentation, Enhancement, Question, Bug, etc. >
+---
+
+**Describe the bug**
+A clear and concise description of what the bug is.
+
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
+
+**Expected behavior**
+A clear and concise description of what you expected to happen.
+""")
