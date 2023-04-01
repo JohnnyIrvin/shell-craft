@@ -43,6 +43,7 @@ Shell Craft supports many different `--prompt` options. We have organized them i
 | Language      | [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) | `javascript`      |
 | Language      | [Java](https://dev.java/)                                             | `java`            |
 | Language      | [Go](https://go.dev/)                                                 | `go`              |
+| Template      | Bug Report                                                            | `bug_report`      |
 | Template      | Feature Request                                                       | `feature_request` |
 
 When `--prompt` is not specified, Shell Craft will use `bash` unless PowerShell is used to call Shell Craft, then it uses `powershell`.
