@@ -179,7 +179,13 @@ Once you have your API key, you **must** pass it to Shell Craft via **one** of t
 
 ### Option 1 (Recommended) - Configuration file:
 
-Create a file named `config.json`:
+shell-craft looks for a configuration file in the following places, in order:
+  - the current directory, named config.json
+  - the file named by $SHELLCRAFT_CONFIG
+  - $XDG_CONFIG_HOME/shell-craft/config.json
+  - $HOME/.config/shell-craft/config.json
+
+The contents are simple json:
 ```
 {
     "openai_api_key": "<your secret key>"

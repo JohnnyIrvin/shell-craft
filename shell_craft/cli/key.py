@@ -43,16 +43,35 @@ def get_api_key() -> str:
     if api_key:
         return api_key
 
-    if not os.path.exists("config.json"):
+    candidates = ["config.json"]
+
+    if 'SHELLCRAFT_CONFIG' in os.environ:
+        candidates.append(os.environ['SHELLCRAFT_CONFIG'])
+
+    config_dir = None
+    if 'XDG_CONFIG_HOME' in os.environ:
+        config_dir = os.path.join(os.environ['XDG_CONFIG_HOME'])
+    elif 'HOME' in os.environ:
+        config_dir = os.path.join(os.environ['HOME'], '.config')
+
+    if config_dir:
+        candidates.append(os.path.join(config_dir, 'shell-craft', 'config.json'))
+
+    filename = None
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            filename = candidate
+            break
+    else:
         raise ValueError("No API key found")
-    
-    with open("config.json") as f:
+
+    with open(filename) as f:
         config = json.load(f)
 
     api_key = config.get("openai_api_key")
     if api_key:
         return api_key
-    
+
     raise ValueError("No API key found")
 
 def add_arguments(parser: ArgumentParser):
