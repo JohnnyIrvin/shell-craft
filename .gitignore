@@ -11,4 +11,3 @@ config.json
 # Ignore Build
 dist/
 *.egg-info/
-build/
