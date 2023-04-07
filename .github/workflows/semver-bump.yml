@@ -24,13 +24,13 @@ jobs:
 
       - name: Get current version
         run: |
-          VERSION=$(python build/semver-bump.py --version)
+          VERSION=$(python build/semver_bump.py --version)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Increment version
         run: |
-          python build/semver-bump.py
-          NEW_VERSION=$(python build/semver-bump.py --version)
+          python build/semver_bump.py
+          NEW_VERSION=$(python build/semver_bump.py --version)
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Commit version bump
@@ -42,7 +42,7 @@ jobs:
 
       - name: Generate changelog
         run: |
-          CHANGELOG=python changelog.py v$VERSION
+          CHANGELOG=python build/change_log.py v$VERSION
           echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
 
       - name: Create release tag
