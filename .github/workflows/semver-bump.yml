@@ -1,0 +1,54 @@
+name: Run version bump, if version changes publish a release.
+
+on:
+  push:
+    branches:
+      - trunk
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install semver
+          pip install pydantic
+
+      - name: Get current version
+        run: |
+          VERSION=$(python build/semver-bump.py --version)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Increment version
+        run: |
+          python build/semver-bump.py
+          NEW_VERSION=$(python build/semver-bump.py --version)
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Commit version bump
+        run: |
+          git add pyproject.toml
+          git commit -m "Bump version to $NEW_VERSION"
+          git push
+        if: env.NEW_VERSION != env.VERSION
+
+      - name: Generate changelog
+        run: |
+          CHANGELOG=python changelog.py v$VERSION
+          echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
+
+      - name: Create release tag
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v$NEW_VERSION
+          body: ${{ env.CHANGELOG }}
+          prerelease: true
+        
