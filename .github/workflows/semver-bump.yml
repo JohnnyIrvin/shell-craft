@@ -14,9 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          persist-credentials: false
+          token: ${{ secrets.PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -43,10 +45,11 @@ jobs:
 
       - name: Commit version bump
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "irvinjohnathan@gmail.com"
+          git config --global user.name "Johnathan Irvin"
+          git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/johnnyirvin/shell-craft.git
           git add pyproject.toml
-          git commit -m "Bump version to v${{ env.NEW_VERSION }}"
+          git commit -m "chore(version): Bump version to v${{ env.NEW_VERSION }}"
           git push
           echo "Committed version bump to ${{ env.NEW_VERSION }}"
         if: ${{ env.NEW_VERSION != env.VERSION }}
@@ -54,8 +57,10 @@ jobs:
       - name: Generate changelog
         run: |
           CHANGELOG=$(python build/change_log.py v${{ env.VERSION }})
-          echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
-          echo "Changelog is ${{ env.CHANGELOG }}"
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "CHANGELOG<<$EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "$EOF" >> $GITHUB_ENV
         if: ${{ env.NEW_VERSION != env.VERSION }}
 
       - name: Create release tag
