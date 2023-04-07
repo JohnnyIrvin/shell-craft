@@ -46,7 +46,7 @@ jobs:
           echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
 
       - name: Create release tag
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v0.1.15
         with:
           tag_name: v$NEW_VERSION
           body: ${{ env.CHANGELOG }}
