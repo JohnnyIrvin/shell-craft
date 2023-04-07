@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -34,7 +36,7 @@ jobs:
 
       - name: Increment version
         run: |
-          python build/semver_bump.py "v${{ env.VERSION }}"
+          python build/semver_bump.py v${{ env.VERSION }}
           NEW_VERSION=$(python build/semver_bump.py --version)
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "Bumped version from ${{ env.VERSION }} to $NEW_VERSION"
@@ -49,7 +51,7 @@ jobs:
 
       - name: Generate changelog
         run: |
-          CHANGELOG=$(python build/change_log.py "v${{ env.VERSION }}"
+          CHANGELOG=$(python build/change_log.py v${{ env.VERSION }})
           echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
           echo "Changelog is ${{ env.CHANGELOG }}"
         if: ${{ env.NEW_VERSION != env.VERSION }}
