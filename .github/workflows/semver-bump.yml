@@ -29,20 +29,20 @@ jobs:
 
       - name: Increment version
         run: |
-          python build/semver_bump.py $VERSION
+          python build/semver_bump.py v$VERSION
           NEW_VERSION=$(python build/semver_bump.py --version)
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Commit version bump
         run: |
           git add pyproject.toml
-          git commit -m "Bump version to $NEW_VERSION"
+          git commit -m "Bump version to v$NEW_VERSION"
           git push
         if: env.NEW_VERSION != env.VERSION
 
       - name: Generate changelog
         run: |
-          CHANGELOG=python build/change_log.py v$VERSION
+          CHANGELOG=$(python build/change_log.py v$NEW_VERSION)
           echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
 
       - name: Create release tag
