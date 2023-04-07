@@ -42,12 +42,13 @@ jobs:
           git add pyproject.toml
           git commit -m "Bump version to v" + $NEW_VERSION
           git push
-        if: env.NEW_VERSION != env.VERSION
+        if: ${{ env.NEW_VERSION != env.VERSION }}
 
       - name: Generate changelog
         run: |
           CHANGELOG=$(python build/change_log.py v$NEW_VERSION)
           echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
+        if: ${{ env.NEW_VERSION != env.VERSION }}
 
       - name: Create release tag
         uses: softprops/action-gh-release@v0.1.15
@@ -55,4 +56,5 @@ jobs:
           tag_name: v${{ env.NEW_VERSION }}
           body: ${{ env.CHANGELOG }}
           prerelease: true
+        if: ${{ env.NEW_VERSION != env.VERSION }}
         
