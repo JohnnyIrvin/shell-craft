@@ -78,10 +78,18 @@ def write_version(version: VersionBump) -> None:
 def main() -> None:
     """
     The main entry point for the script. Assumes that "git" is installed.
-    Makes an assumption that the first argument is the tag to use for the version bump.
+    Makes an assumption that the first argument is the tag to use for the
+    version bump.
+
+    If the first argument is "--version", then the version will be printed
+    to the console.
 
     Example:
         python build/semver_bump.py trunk
+
+        or
+
+        python build/semver_bump.py --version
 
     Raises:
         ValueError: If the first argument is not a valid tag.
@@ -91,6 +99,10 @@ def main() -> None:
     """
     import sys
     import subprocess
+
+    if sys.argv[1] == "--version":
+        print(get_version().version)
+        return
     
     write_version(
         get_version().bump(
