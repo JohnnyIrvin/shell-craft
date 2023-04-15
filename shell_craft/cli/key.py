@@ -91,5 +91,10 @@ def add_arguments(parser: ArgumentParser):
         help="The OpenAI API key to use.",
     )
 
-    if not parser.parse_known_args()[0].api_key:
-        parser.set_defaults(api_key=get_api_key())
+    try:
+        if not parser.parse_known_args()[0].api_key:
+            parser.set_defaults(api_key=get_api_key())
+    except ValueError:
+        print("No API key found. Please provide one with the --api-key argument.")
+        parser.print_help()
+        exit(1)
