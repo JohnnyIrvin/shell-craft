@@ -3,6 +3,10 @@ name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
 on:
   registry_package:
     types: [released, prereleased]
+  workflow_run:
+    workflows: ["Run version bump, if version changes publish a release."]
+    types:
+      - completed
 
 jobs:
   build-n-publish:
