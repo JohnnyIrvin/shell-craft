@@ -55,7 +55,7 @@ class Prompt:
         """        
         return [
             {
-                "role": "system",
+                "role": "user",
                 "content": self.content
             }
         ] + self.examples
