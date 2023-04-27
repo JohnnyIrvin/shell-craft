@@ -46,7 +46,8 @@ def main():
             model=args.model
         ).query(
             message=' '.join(args.request),
-            count=args.count
+            count=args.count,
+            temperature=args.temperature
         )
     )
 
