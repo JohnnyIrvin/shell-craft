@@ -18,7 +18,20 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentTypeError
+
+def limited_float(min: float, max: float):
+    def _ret_func(arg: str):
+        if not str(arg).isdecimal:
+            raise ArgumentTypeError(f"{arg} is not a decimal")
+        
+        f = float(arg)
+        if f < min or f > max:
+            raise ArgumentTypeError(f"{arg} is not between {min} and {max}")
+        
+        return f
+    
+    return _ret_func
 
 
 def add_arguments(parser: ArgumentParser):
@@ -26,6 +39,7 @@ def add_arguments(parser: ArgumentParser):
     Adds arguments that effect the results of the openai api call.
 
     '--count (-c)' is used to specify the number of results to return.
+    '--temperature (-t)' is used to specify the sampling temperature to use.
 
     Args:
         parser (ArgumentParser): The parser to add the arguments to.
@@ -36,4 +50,12 @@ def add_arguments(parser: ArgumentParser):
         type=int,
         default=1,
         help="The number of results to return.",
+    )
+
+    parser.add_argument(
+        "-t",
+        "--temperature",
+        type=limited_float(0.0, 2.0),
+        default=1.0,
+        help="The sampling temperature to use. Must be between 0 and 2.",
     )

@@ -43,19 +43,25 @@ class Service:
         self._prompt: Prompt = prompt
         self._model: str = model
 
-    def query(self, message: str, count: int = 1) -> Union[str, list[str]]:
+    def query(self, message: str, count: int = 1, temperature: float = 1.0) -> Union[str, list[str]]:
         """
         Query the model with a message.
 
         Args:
             message (str): The message to query the model with.
             count (int, optional): The number of responses to return. Defaults to 1.
+            temperature (float, optional): The sampling temperature to use. Defaults to 1.
 
         Returns:
             str | list[str]: The response from the model as a string or a list of strings.
         """
         warn(
             "In the future, the return type of Service.query will be a list of strings.",
+            DeprecationWarning,
+            source="shell_craft.services.Service.query"
+        )
+        warn(
+            "In the future, configuring the number of results and sampling temperature will be done through a configuration interface.",
             DeprecationWarning,
             source="shell_craft.services.Service.query"
         )
@@ -70,6 +76,7 @@ class Service:
                 }
             ],
             n=count,
+            temperature=temperature,
         )['choices']
 
         if count == 1:
