@@ -49,7 +49,7 @@ jobs:
           git config --global user.name "Johnathan Irvin"
           git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/johnnyirvin/shell-craft.git
           git add pyproject.toml
-          git commit -m "chore(version): Bump version to v${{ env.NEW_VERSION }}"
+          git commit -m "chore(version): Bump version to v${{ env.NEW_VERSION }} [skip ci]"
           git push
           echo "Committed version bump to ${{ env.NEW_VERSION }}"
         if: ${{ env.NEW_VERSION != env.VERSION }}
