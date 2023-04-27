@@ -18,40 +18,22 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from shell_craft import Service
-from shell_craft.factories import PromptFactory
-
-from .parser import PARSER, get_arguments
+from argparse import ArgumentParser
 
 
-def main():
+def add_arguments(parser: ArgumentParser):
     """
-    Main function that processes the command-line arguments and queries the
-    OpenAI API using shell_craft.
-    """
-    args = get_arguments(PARSER)
-    prompt = PromptFactory.get_prompt(args.prompt)
+    Adds arguments that effect the results of the openai api call.
 
-    if getattr(args, "refactor", False):
-        prompt = prompt.refactoring
-    elif getattr(args, "document", False):
-        prompt = prompt.documentation
-    elif getattr(args, "test", False):
-        prompt = prompt.testing
+    '--count (-c)' is used to specify the number of results to return.
 
-    result = (
-        Service(
-            api_key=args.api_key,
-            prompt=prompt,
-            model=args.model
-        ).query(
-            message=' '.join(args.request),
-            count=args.count
-        )
+    Args:
+        parser (ArgumentParser): The parser to add the arguments to.
+    """    
+    parser.add_argument(
+        "-c",
+        "--count",
+        type=int,
+        default=1,
+        help="The number of results to return.",
     )
-
-    if isinstance(result, list):
-        for _, r in enumerate(result):
-            print(r)
-    else:
-        print(result)

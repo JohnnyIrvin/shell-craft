@@ -18,6 +18,9 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from typing import Union
+from warnings import warn
+
 import openai
 
 from shell_craft.prompts import Prompt
@@ -40,17 +43,24 @@ class Service:
         self._prompt: Prompt = prompt
         self._model: str = model
 
-    def query(self, message: str) -> str:
+    def query(self, message: str, count: int = 1) -> Union[str, list[str]]:
         """
         Query the model with a message.
 
         Args:
             message (str): The message to query the model with.
+            count (int, optional): The number of responses to return. Defaults to 1.
 
         Returns:
-            str: The response from the model.
+            str | list[str]: The response from the model as a string or a list of strings.
         """
-        return openai.ChatCompletion.create(
+        warn(
+            "In the future, the return type of Service.query will be a list of strings.",
+            DeprecationWarning,
+            source="shell_craft.services.Service.query"
+        )
+
+        choices = openai.ChatCompletion.create(
             api_key=self._api_key,
             model=self._model,
             messages=self._prompt.messages + [
@@ -58,5 +68,11 @@ class Service:
                     "role": "user",
                     "content": message
                 }
-            ]
-        )['choices'][0]['message']['content']
+            ],
+            n=count,
+        )['choices']
+
+        if count == 1:
+            return choices[0]['message']['content']
+        
+        return [choice['message']['content'] for choice in choices]
