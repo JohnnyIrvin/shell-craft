@@ -2,147 +2,43 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/openai-shell-craft?color=green&label=PyPI)](https://pypi.org/project/openai-shell-craft/) [![codecov](https://codecov.io/gh/JohnnyIrvin/shell-craft/branch/trunk/graph/badge.svg?token=MKYZOJR8SQ)](https://codecov.io/gh/JohnnyIrvin/shell-craft)
 
-Generating shell commands and code using natural language models (OpenAI ChatGPT).
+Generating shell commands and code using natural language models (OpenAI ChatGPT). 
 
-## Install using Pip
+Shell Craft can:
 
-```sh
-pip install openai-shell-craft
-```
+1. Generate shell commands from natural language requests.
+2. Write code in a dozen languages from natural language requests.
+3. Refactor existing code.
+4. Document existing code.
+5. Generate tests for existing code.
+6. Generate issue tickets and feature requests for GitHub, GitLab, and BitBucket.
 
-## Build from Docker and Run
+Our goal is to 10x developer productivity by combining the power of natural language models with the power of the command line.
 
-```sh
-docker build . --tag shell_craft --target shell_craft
-docker run shell_craft --help
-```
+## Installation
+
+See the [Wiki](https://github.com/JohnnyIrvin/shell-craft/wiki) for installation instructions.
+
+* [Pip Installation](https://github.com/JohnnyIrvin/shell-craft/wiki/Install-via-Pip)
+* [Docker Installation](https://github.com/JohnnyIrvin/shell-craft/wiki/Install-via-Docker)
 
 ## Command Line Interface
 
-All command line usage follows the following format:
+Shell Craft often follows the format of:
 
 ```bash
-shell-craft <request>
+shell-craft --prompt <type> <request>
 ```
 
-### Quick Start
-
-```sh
-shell-craft "tell me how long the system has been up for"
-```
-
-Returns:
-```bash
-uptime -p
-```
-
-## Prompt Types
-
-Shell Craft supports many different `--prompt` options. We have organized them into categories here only to aid in reference usage.
-
-| Category      | Name                                                                  | Argument Value    |
-|---------------|-----------------------------------------------------------------------|-------------------|
-| Language      | [Bash](https://www.gnu.org/software/bash/)                            | `bash`            |
-| Language      | [PowerShell](https://learn.microsoft.com/en-us/powershell/)           | `powershell`      |
-| Language      | [Python](https://www.python.org/)                                     | `python`          |
-| Language      | [C](https://en.wikipedia.org/wiki/C_(programming_language))           | `c`               |
-| Language      | [C#](https://learn.microsoft.com/en-us/dotnet/csharp/)                | `c_sharp`         |
-| Language      | [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) | `javascript`      |
-| Language      | [Java](https://dev.java/)                                             | `java`            |
-| Language      | [Go](https://go.dev/)                                                 | `go`              |
-| Template      | Bug Report                                                            | `bug_report`      |
-| Template      | Feature Request                                                       | `feature_request` |
-
-When `--prompt` is not specified, Shell Craft will use `bash` unless PowerShell is used to call Shell Craft, then it uses `powershell`.
-
-### Help Prompt
-
-For additional help you can run:
+You can use the following command to get started:
 
 ```bash
 shell-craft --help
 ```
 
-### Bash Example
+See the [Wiki](https://github.com/JohnnyIrvin/shell-craft/wiki) for additional command line usage instructions.
 
-Executing:
-```bash
-shell-craft --prompt bash "find all swp files and delete them if theyre not in use"
-```
-
-Returns a Bash command:
-```bash
-find . -name '*.swp' -type f ! -exec fuser -s {} \; -delete
-```
-
-### Powershell Example
-
-Executing:
-```ps1
-shell-craft --prompt powershell "remove all files older than 30 days"
-```
-
-Returns a PowerShell command:
-```ps1
-Get-ChildItem -Path "C:\your\path" -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30)} | Remove-Item -Force
-```
-
-### Refactoring existing code
-```bash
-cat my_code.py | python -m shell_craft --prompt python --refactor
-```
-
-### Documenting existing code
-```bash
-cat my_code.py | python -m shell_craft --prompt python --document
-```
-
-### Generating tests for existing code
-```bash
-cat my_code.py | python -m shell_craft --prompt python --test
-```
-
-### Feature Request Example
-
-Executing:
-```sh
-shell_craft --prompt feature_request "add an icon that shows the total test coverage"
-```
-
-Returns Markdown:
-```markdown
----
-
-name: Add Total Test Coverage Icon
-about: Add an icon that shows the total test coverage
-labels: Enhancement
-
----
-
-
-
-**Is your feature request related to a problem? Please describe.**
-There is currently no easy way to visualize the total test coverage for a project.
-
-**Describe the solution you'd like**
-I would like to have an icon on the project dashboard that, when clicked, displays the total test coverage for the project. This will allow developers to easily monitor and improve the overall test coverage for the project.
-
-**Describe alternatives you've considered**
-As an alternative, I have considered adding the total test coverage to the project README file. However, this solution would not be as easily accessible as an icon on the project dashboard.
-```
-
-## Language Models
-
-Support for different [OpenAI models](https://platform.openai.com/docs/models).
-
-Currently recommended `--model` options:
-1. `gpt-3.5-turbo` (default)
-2. `gpt-4`
-3. `gpt-4-32k`
-4. `code-davinci-002`
-5. `text-davinci-003`
-
-If `--model` is not specified, it will use `gpt-3.5-turbo` by default.
+See [Prompt Types](https://github.com/JohnnyIrvin/shell-craft/wiki/Different-Prompt-Options) for a guide to the different `--prompt` options.
 
 ## Python API
 
