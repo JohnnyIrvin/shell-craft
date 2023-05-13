@@ -174,16 +174,7 @@ def get_arguments(parser: ArgumentParser) -> Namespace:
 
     return parser.parse_args(arguments)
 
-PARSER = initialize_parser(
-    ArgumentParser(
-        prog="shell-craft",
-        description="Generating shell commands and code using natural language models (OpenAI ChatGPT).",
-        add_help=False
-    )
-)
-
 __all__ = [
     "get_arguments",
-    "PARSER"
 ]
 

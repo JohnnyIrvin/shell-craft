@@ -18,10 +18,12 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from argparse import ArgumentParser
+
 from shell_craft import Service
 from shell_craft.factories import PromptFactory
 
-from .parser import PARSER, get_arguments
+from .parser import get_arguments, initialize_parser
 
 
 def main():
@@ -29,7 +31,15 @@ def main():
     Main function that processes the command-line arguments and queries the
     OpenAI API using shell_craft.
     """
-    args = get_arguments(PARSER)
+    args = get_arguments(
+        initialize_parser(
+            ArgumentParser(
+                prog="shell-craft",
+                description="Generating shell commands and code using natural language models (OpenAI ChatGPT).",
+                add_help=False
+            )
+        )
+    )
     prompt = PromptFactory.get_prompt(args.prompt)
 
     if getattr(args, "refactor", False):
