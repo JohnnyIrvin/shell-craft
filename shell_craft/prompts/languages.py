@@ -84,7 +84,7 @@ def get_prompts() -> list[LanguagePrompt]:
 BASH_PROMPT = _generate_prompt("Bash")
 C_PROMPT = _generate_prompt("C")
 C_SHARP_PROMPT = _generate_prompt("C#")
-GO_PROMPT = _generate_prompt("Go")
+GO_PROMPT = _generate_prompt("GoLang")
 POWERSHELL_PROMPT = _generate_prompt("PowerShell")
 PYTHON_PROMPT = _generate_prompt("Python")
 JAVA_PROMPT = _generate_prompt("Java")
