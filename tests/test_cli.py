@@ -20,8 +20,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from argparse import ArgumentParser
 
+from pytest import fixture, mark
+
+from shell_craft.cli.github import GitHubArguments
+from shell_craft.cli.github import add_arguments as add_github_arguments
 from shell_craft.cli.models import add_arguments as add_model_arguments
-from pytest import mark
+
 
 @mark.parametrize('model', [
     'gpt-4',
@@ -36,3 +40,46 @@ def test_ai_model_arguments(model: str):
     add_model_arguments(parser)
     args = parser.parse_args(['--model', model])
     assert args.model == model
+
+def test_github_arguments():
+    parser = ArgumentParser()
+    add_github_arguments(parser)
+    args = parser.parse_args(['--github', 'https://github.com/JohnnyIrvin/shell-craft/'])
+    assert args.github == 'https://github.com/JohnnyIrvin/shell-craft/'
+
+@mark.parametrize('field, value', [
+    ('title', 'test'),
+    ('labels', ['one', 'two', 'three']),
+    ('body', 'about me\n\nbody'),
+])
+def test_github_arguments_from_prompt(field: str, value: list[str] | str):
+    args = GitHubArguments.from_prompt("""
+---
+name: test
+about: about me
+labels: one,two,three
+---
+body
+    """)
+    assert getattr(args, field) == value
+
+def test_github_arguments_as_url():
+    from urllib.parse import urlencode
+
+    args = GitHubArguments.from_prompt("""
+---
+name: test
+about: about me
+labels: one,two,three
+---
+body
+    """)
+
+    assert args.as_url('https://github.com/JohnnyIrvin/shell-craft/') == (
+        'https://github.com/JohnnyIrvin/shell-craft/issues/new?'
+        + urlencode({
+            'title': 'test',
+            'labels': 'one,two,three',
+            'body': 'about me\n\nbody'
+        })
+    )
