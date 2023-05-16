@@ -22,8 +22,29 @@ from argparse import ArgumentParser
 
 from shell_craft import Service
 from shell_craft.factories import PromptFactory
+from shell_craft.cli.github import GitHubArguments
 
 from .parser import get_arguments, initialize_parser
+
+def get_github_url_or_error(prompt: str, repository: str) -> str:
+    """
+    Returns the GitHub URL for the prompt.
+
+    Args:
+        prompt (str): The prompt to generate the GitHub URL for.
+        repository (str): The GitHub URL to generate the URL for.
+
+    Returns:
+        str: The GitHub URL for the prompt.
+    """
+    try:
+        return GitHubArguments.from_prompt(
+            prompt
+        ).as_url(
+            repository
+        )
+    except Exception:
+        return "Error: Unable to generate GitHub URL."
 
 
 def main():
@@ -61,8 +82,16 @@ def main():
         )
     )
 
+    github_url = getattr(args, "github", None)
     if isinstance(result, list):
         for _, r in enumerate(result):
-            print(r)
+            if github_url:
+                print(get_github_url_or_error(r, github_url))
+            else:
+                print(r)
+        exit(0)
+
+    if github_url:
+        print(get_github_url_or_error(result, github_url))
     else:
         print(result)
