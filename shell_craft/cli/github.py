@@ -20,16 +20,26 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from argparse import ArgumentParser
 
+from shell_craft.prompts import PromptFactory
+from shell_craft.prompts.templates import (BUG_REPORT_PROMPT,
+                                           FEATURE_REQUEST_PROMPT)
+
+
+ARGUMENTS = {
+    'prompt': lambda x: PromptFactory.get_prompt(x) in [ BUG_REPORT_PROMPT, FEATURE_REQUEST_PROMPT ]
+}
+
 def add_arguments(parser: ArgumentParser):
     """
-    Adds '-h' and '--help' arguments to the parser. These arguments are used to
-    display the help message for the program.
+    Adds 'github' argument to the parser. This argument is used to
+    specify the URL to the GitHub repository to open an issue or feature
+    request for.
 
     Args:
         parser (ArgumentParser): The parser to add the argument to.
-    """    
+    """
     parser.add_argument(
-        "-h --help",
-        action="help",
-        help="Show this help message and exit."
+        '--github',
+        type=str,
+        help='The URL to the GitHub repository to open an issue or feature request for.'
     )

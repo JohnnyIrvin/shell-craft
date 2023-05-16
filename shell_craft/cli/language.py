@@ -34,7 +34,7 @@ def add_arguments(parser: ArgumentParser):
 
     Args:
         parser (ArgumentParser): The parser to add the argument to.
-    """    
+    """
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(
         '--refactor',
