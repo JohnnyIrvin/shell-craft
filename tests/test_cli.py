@@ -19,8 +19,9 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from argparse import ArgumentParser
+from typing import Union
 
-from pytest import fixture, mark
+from pytest import mark
 
 from shell_craft.cli.github import GitHubArguments
 from shell_craft.cli.github import add_arguments as add_github_arguments
@@ -52,7 +53,7 @@ def test_github_arguments():
     ('labels', ['one', 'two', 'three']),
     ('body', 'about me\n\nbody'),
 ])
-def test_github_arguments_from_prompt(field: str, value: list[str] | str):
+def test_github_arguments_from_prompt(field: str, value: Union[list[str], str]):
     args = GitHubArguments.from_prompt("""
 ---
 name: test
