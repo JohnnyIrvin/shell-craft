@@ -19,15 +19,82 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from argparse import ArgumentParser
+from dataclasses import dataclass
+from urllib.parse import urlencode, urljoin
 
-from shell_craft.prompts import PromptFactory
+from shell_craft.factories import PromptFactory
 from shell_craft.prompts.templates import (BUG_REPORT_PROMPT,
                                            FEATURE_REQUEST_PROMPT)
-
 
 ARGUMENTS = {
     'prompt': lambda x: PromptFactory.get_prompt(x) in [ BUG_REPORT_PROMPT, FEATURE_REQUEST_PROMPT ]
 }
+
+@dataclass
+class GitHubArguments:
+    title: str
+    labels: list[str]
+    body: str
+
+    def as_url(self, repository: str) -> str:
+        """
+        Generates a URL to open an issue or feature request for the
+        GitHub repository.
+
+        Args:
+            repository (str): The URL to the GitHub repository.
+
+        Returns:
+            str: The URL to open an issue or feature request for the
+                GitHub repository.
+        """        
+        return (
+            urljoin(
+                repository.rstrip('/') + '/',
+                'issues/new'
+            )
+            + '?'
+            + urlencode({
+                'title': self.title,
+                'labels': ','.join(self.labels),
+                'body': self.body
+            })
+        )
+    
+    @staticmethod
+    def from_prompt(prompt: str) -> 'GitHubArguments':
+        """
+        Parses data from
+
+        ```
+        ---
+        name: <Name Of Bug>
+        about: <Short Description>
+        labels: < Documentation, Enhancement, Question, Bug, etc. >
+        ---
+
+        <body>
+        ```
+        """
+        tokens = prompt.split('---')
+
+        if len(tokens) != 3:
+            raise ValueError('Invalid prompt.')
+        
+        _, metadata, body = tokens
+
+        tokens = metadata.split('\n')
+        metadata = {
+            token.split(':')[0].strip(): ':'.join(token.split(':')[1:]).strip()
+            for token in tokens
+        }
+
+        return GitHubArguments(
+            title=metadata['name'],
+            labels=metadata['labels'].split(','),
+            body=metadata['about'] + '\n\n' + body.strip()
+        )
+        
 
 def add_arguments(parser: ArgumentParser):
     """
