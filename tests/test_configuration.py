@@ -18,16 +18,28 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from typing import Protocol
+import pytest
+from shell_craft.configuration import Configuration, JSONConfiguration
 
 
-class Configuration(Protocol):
-    @property
-    def keys(self) -> list[str]:
-        ...
-    
-    def get_value(self, key: str) -> str:
-        ...
+def json_configuration() -> JSONConfiguration:
+    return JSONConfiguration(
+        text="""{
+            "key": "value"
+        }"""
+    )
 
-    def set_value(self, key: str, value: str) -> None:
-        ...
+@pytest.mark.parametrize(
+    "configuration, key, value", [
+    (json_configuration(), "key", "value"),
+])
+def test_get_value(configuration: Configuration, key: str, value: str) -> None:
+    assert configuration.get_value(key) == value
+
+@pytest.mark.parametrize(
+    "configuration, key, value", [
+    (json_configuration(), "key", "new_value"),
+])
+def test_set_value(configuration: Configuration, key: str, value: str) -> None:
+    configuration.set_value(key, value)
+    assert configuration.get_value(key) == value

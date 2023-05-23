@@ -18,16 +18,37 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from typing import Protocol
+import json
 
+class JSONConfiguration:
+    def __init__(self, text: str) -> None:
+        self._configuration = json.loads(text)
 
-class Configuration(Protocol):
     @property
     def keys(self) -> list[str]:
-        ...
+        return list(self._configuration.keys())
     
     def get_value(self, key: str) -> str:
-        ...
+        """
+        Gets a value from the json text.
 
+        Args:
+            key (str): Looks up the JSON key using this value.
+
+        Raises:
+            KeyError: If the key does not exist in the JSON text.
+
+        Returns:
+            str: The value for the key.
+        """        
+        return self._configuration[key]
+    
     def set_value(self, key: str, value: str) -> None:
-        ...
+        """
+        Sets a value in the json text. Does not save the text to a file.
+
+        Args:
+            key (str): The key to set.
+            value (str): The value to set.
+        """        
+        self._configuration[key] = value
