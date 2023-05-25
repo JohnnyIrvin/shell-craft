@@ -45,7 +45,7 @@ def main() -> None:
                 '--pretty=format:"[%H](https://github.com/JohnnyIrvin/shell-craft/commit/%H) %s ([%an](mailto:%ae))%C(auto)"',
                 "--no-merges",
                 "--source",
-                "--inverted-grep='^[chore]*'"      
+                "--grep='^[^chore]*'",    
                 f"{sys.argv[1]}..HEAD",
             ],
             capture_output=True,
