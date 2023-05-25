@@ -25,7 +25,8 @@ class PromptFactory:
     @staticmethod
     def get_prompt(prompt: str) -> Prompt:
         """
-        Generates a new prompt object based on the prompt type.
+        Generates a new prompt object based on the prompt type. If the prompt
+        type is not supported, a ValueError is raised.
 
         Args:
             prompt (str): A string representing the prompt type.
@@ -37,6 +38,9 @@ class PromptFactory:
             Prompt: A new prompt object.
         """        
         import shell_craft.prompts as prompts
+
+        if not prompt:
+            return None
 
         available_prompts = [
             prompt.removesuffix('_PROMPT').casefold()
