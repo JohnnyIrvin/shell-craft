@@ -43,9 +43,9 @@ def main() -> None:
                 "git",
                 "log",
                 '--pretty=format:"[%H](https://github.com/JohnnyIrvin/shell-craft/commit/%H) %s ([%an](mailto:%ae))%C(auto)"',
-                "--no-merges",
-                "--inverted-grep='^[chore]*'"  
-                "--source",    
+                "--no-merges",    
+                "--source",
+                "--inverted-grep='^[chore]*'"
                 f"{sys.argv[1]}..HEAD",
             ],
             capture_output=True,
