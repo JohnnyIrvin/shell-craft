@@ -19,7 +19,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import pytest
-from shell_craft.configuration import Configuration, JSONConfiguration
+from shell_craft.configuration import (AggregateConfiguration, Configuration,
+                                       JSONConfiguration)
 
 
 def json_configuration() -> JSONConfiguration:
@@ -29,9 +30,17 @@ def json_configuration() -> JSONConfiguration:
         }"""
     )
 
+def aggregate_configuration() -> AggregateConfiguration:
+    return AggregateConfiguration(
+        configurations=[
+            json_configuration()
+        ]
+    )
+
 @pytest.mark.parametrize(
     "configuration, key, value", [
     (json_configuration(), "key", "value"),
+    (aggregate_configuration(), "key", "value"),
 ])
 def test_get_value(configuration: Configuration, key: str, value: str) -> None:
     assert configuration.get_value(key) == value
@@ -39,6 +48,7 @@ def test_get_value(configuration: Configuration, key: str, value: str) -> None:
 @pytest.mark.parametrize(
     "configuration, key, value", [
     (json_configuration(), "key", "new_value"),
+    (aggregate_configuration(), "key", "new_value"),
 ])
 def test_set_value(configuration: Configuration, key: str, value: str) -> None:
     configuration.set_value(key, value)
