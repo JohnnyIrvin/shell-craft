@@ -18,14 +18,40 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from .aggregate import AggregateConfiguration
-from .configuration import Configuration
-from .dictionary import DictionaryConfiguration
-from .json import JSONConfiguration
 
-__all__ = [
-    "AggregateConfiguration",
-    "Configuration",
-    "DictionaryConfiguration",
-    "JSONConfiguration",
-]
+class DictionaryConfiguration:
+    def __init__(self, variables: dict[str, str]) -> None:
+        self._variables = {
+            key.lower(): value
+            for key, value in variables.items()
+            if key.isupper()
+        }
+
+    @property
+    def keys(self) -> list[str]:
+        return list(self._variables.keys())
+    
+    def get_value(self, key: str) -> str:
+        """
+        Gets a value from the json text.
+
+        Args:
+            key (str): Looks up the JSON key using this value.
+
+        Raises:
+            KeyError: If the key does not exist in the JSON text.
+
+        Returns:
+            str: The value for the key.
+        """        
+        return self._variables[key.lower()]
+    
+    def set_value(self, key: str, value: str) -> None:
+        """
+        Sets a value in the json text. Does not save the text to a file.
+
+        Args:
+            key (str): The key to set.
+            value (str): The value to set.
+        """        
+        self._variables[key.lower()] = value
