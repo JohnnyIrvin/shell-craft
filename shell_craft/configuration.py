@@ -81,5 +81,5 @@ class AggregateConfiguration(dict):
         return cls([
             JSONConfiguration.from_file(path)
             for path in paths
-            if pathlib.Path(path).exists()
+            if path and pathlib.Path(path).exists()
         ])
