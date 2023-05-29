@@ -18,39 +18,34 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+import json
+from typing import Any, Protocol
 
-class DictionaryConfiguration:
-    def __init__(self, variables: dict[str, str]) -> None:
-        self._variables = variables
 
-    @property
-    def keys(self) -> list[str]:
+class Configuration(Protocol):
+    def get(self, key: Any, default=None) -> Any:
+        ...
+
+class JSONConfiguration(dict):
+    def __init__(self, text: str) -> None:
         """
-        Gets the keys for the dictionary.
-
-        Returns:
-            list[str]: The keys for the dictionary.
-        """        
-        return list(self._variables.keys())
-    
-    def get_value(self, key: str) -> str | None:
-        """
-        Gets a value from the json text.
+        Initialize the JSON configuration with the given text.
 
         Args:
-            key (str): Looks up the JSON key using this value.
-
-        Returns:
-            str: The value for the key.
+            text (str): The text to parse as JSON.
         """        
-        return self._variables.get(key)
-    
-    def set_value(self, key: str, value: str) -> None:
+        super().__init__(json.loads(text))
+
+class AggregateConfiguration(dict):
+    def __init__(self, configurations: list) -> None:
         """
-        Sets a value in the json text. Does not save the text to a file.
+        Aggregate the given configurations into a single configuration.
 
         Args:
-            key (str): The key to set.
-            value (str): The value to set.
+            configurations (list): The configurations to aggregate.
         """        
-        self._variables[key] = value
+        super().__init__({
+            key: config.get(key)
+            for config in configurations[::-1]
+            for key in config.keys()
+        })

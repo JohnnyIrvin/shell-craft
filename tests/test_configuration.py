@@ -20,7 +20,6 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import pytest
 from shell_craft.configuration import (AggregateConfiguration, Configuration,
-                                       DictionaryConfiguration,
                                        JSONConfiguration)
 
 
@@ -31,12 +30,10 @@ def json_configuration() -> JSONConfiguration:
         }"""
     )
 
-def dictionary_configuration() -> DictionaryConfiguration:
-    return DictionaryConfiguration(
-        variables={
-            "key": "dictionary"
-        }
-    )
+def dictionary_configuration() -> dict:
+    return {
+        "key": "dictionary"
+    }
 
 def aggregate_configuration() -> AggregateConfiguration:
     return AggregateConfiguration(
@@ -52,18 +49,8 @@ def aggregate_configuration() -> AggregateConfiguration:
     (dictionary_configuration(), "key", "dictionary"),
     (aggregate_configuration(), "key", "json"),
 ])
-def test_get_value(configuration: Configuration, key: str, value: str) -> None:
-    assert configuration.get_value(key) == value
-
-@pytest.mark.parametrize(
-    "configuration, key, value", [
-    (json_configuration(), "key", "new_value"),
-    (dictionary_configuration(), "key", "new_value"),
-    (aggregate_configuration(), "key", "new_value"),
-])
-def test_set_value(configuration: Configuration, key: str, value: str) -> None:
-    configuration.set_value(key, value)
-    assert configuration.get_value(key) == value
+def test_get(configuration: Configuration, key: str, value: str) -> None:
+    assert configuration.get(key) == value
 
 @pytest.mark.parametrize(
     "configuration, keys", [
@@ -72,4 +59,4 @@ def test_set_value(configuration: Configuration, key: str, value: str) -> None:
     (aggregate_configuration(), ["key"]),
 ])
 def test_get_keys(configuration: Configuration, keys: list[str]) -> None:
-    assert configuration.keys == keys
+    assert list(configuration.keys()) == keys

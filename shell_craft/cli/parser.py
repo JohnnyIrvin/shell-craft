@@ -77,7 +77,7 @@ class ShellCraftParser:
             if value is not None
             and key not in ['flags', 'restrictions', 'config']
         }
-        kwargs['default'] = self._config.get_value(command.config) or command.default
+        kwargs['default'] = self._config.get(command.config) or command.default
 
         adder(flags, **kwargs)
         self._commands.append(command)
