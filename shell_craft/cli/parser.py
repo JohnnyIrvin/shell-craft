@@ -19,12 +19,12 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from argparse import ArgumentParser, Namespace
+from dataclasses import asdict
 from sys import argv, stdin
 from typing import Callable
 
 from shell_craft.configuration import Configuration
 from shell_craft.factories import PromptFactory
-from dataclasses import asdict
 
 from .commands import Command, CommandGroup, CommandRestriction
 
@@ -189,5 +189,7 @@ def get_arguments(parser: ArgumentParser) -> Namespace:
 
 __all__ = [
     "get_arguments",
+    "initialize_parser"
+    "ShellCraftParser"
 ]
 
