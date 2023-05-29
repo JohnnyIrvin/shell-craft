@@ -18,39 +18,43 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+import openai
 
-class DictionaryConfiguration:
-    def __init__(self, variables: dict[str, str]) -> None:
-        self._variables = variables
+from .settings import OpenAISettings
 
-    @property
-    def keys(self) -> list[str]:
+
+class OpenAIService:
+    def __init__(self, settings: OpenAISettings) -> None:
         """
-        Gets the keys for the dictionary.
-
-        Returns:
-            list[str]: The keys for the dictionary.
-        """        
-        return list(self._variables.keys())
-    
-    def get_value(self, key: str) -> str | None:
-        """
-        Gets a value from the json text.
+        Initialize a new OpenAI service with the given settings. This
+        service is responsible for querying the OpenAI API.
 
         Args:
-            key (str): Looks up the JSON key using this value.
-
-        Returns:
-            str: The value for the key.
-        """        
-        return self._variables.get(key)
-    
-    def set_value(self, key: str, value: str) -> None:
+            config (Configuration): The configuration to use for the service.
         """
-        Sets a value in the json text. Does not save the text to a file.
+        self._settings = settings
+
+    def query(self, message: str) -> list[str]:
+        """
+        Query the model with a message.
 
         Args:
-            key (str): The key to set.
-            value (str): The value to set.
-        """        
-        self._variables[key] = value
+            message (str): The message to query the model with.
+
+        Returns:
+            list[str]: The response from the model as a string or a list of strings.
+        """
+        choices = openai.ChatCompletion.create(
+            api_key=self._settings.api_key,
+            model=self._settings.model,
+            messages=self._settings.messages + [
+                {
+                    "role": "user",
+                    "content": message
+                }
+            ],
+            n=self._settings.count,
+            temperature=self._settings.temperature,
+        )['choices']
+
+        return [choice['message']['content'] for choice in choices]
