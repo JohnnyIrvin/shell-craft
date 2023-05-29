@@ -18,13 +18,58 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+import os
+import pathlib
 from argparse import ArgumentParser
 
 from shell_craft import Service
-from shell_craft.factories import PromptFactory
 from shell_craft.cli.github import GitHubArguments
+from shell_craft.configuration import (AggregateConfiguration,
+                                       DictionaryConfiguration,
+                                       JSONConfiguration)
+from shell_craft.factories import PromptFactory
 
 from .parser import get_arguments, initialize_parser
+
+def _read_file(path: str) -> str:
+    """
+    Reads the file at the path and returns the contents.
+
+    Args:
+        path (str): The path to the file to read.
+
+    Returns:
+        str: The contents of the file.
+    """
+    with open(path, 'r') as f:
+        return f.read()
+
+def _get_configuration() -> AggregateConfiguration:
+    """
+    Returns the configuration for the shell-craft CLI.
+
+    Returns:
+        AggregateConfiguration: The configuration for the shell-craft CLI.
+    """
+    env = DictionaryConfiguration(os.environ)
+    
+    paths = [
+        os.path.join(os.getcwd(), 'config.json'),
+        env.get_value('SHELLCRAFT_CONFIG'),
+        os.path.join('~', '.config', 'shell-craft', 'config.json')
+    ]
+
+    if env.get_value('XDG_CONFIG_HOME'):
+        paths.append(os.path.join(env.get_value('XDG_CONFIG_HOME'), 'shell-craft', 'config.json'))
+
+    configurations = [
+        JSONConfiguration(_read_file(path))
+        for path in paths
+        if path and pathlib.Path(path).expanduser().exists()
+    ]
+
+    configurations.append(env)
+    return AggregateConfiguration(configurations)
 
 def get_github_url_or_error(prompt: str, repository: str) -> str:
     """
@@ -58,8 +103,9 @@ def main():
                 prog="shell-craft",
                 description="Generating shell commands and code using natural language models (OpenAI ChatGPT).",
                 add_help=False
-            )
-        )
+            ),
+            configuration=_get_configuration()
+        ),
     )
     prompt = PromptFactory.get_prompt(args.prompt)
 

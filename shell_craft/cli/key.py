@@ -18,63 +18,12 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import json
-import os
 from argparse import ArgumentParser
 
+from shell_craft.configuration import Configuration
 
-def get_api_key() -> str:
-    """
-    Gets the API key from the environment variable OPENAI_API_KEY, or from the
-    config.json file. If neither are found, a ValueError is raised. The config.json
-    file should be in the following format:
 
-    {
-        "openai_api_key": "YOUR_API_KEY"
-    }
-
-    Raises:
-        ValueError: If no API key is found.
-
-    Returns:
-        str: The API key.
-    """
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if api_key:
-        return api_key
-
-    candidates = ["config.json"]
-
-    if 'SHELLCRAFT_CONFIG' in os.environ:
-        candidates.append(os.environ['SHELLCRAFT_CONFIG'])
-
-    config_dir = None
-    if 'XDG_CONFIG_HOME' in os.environ:
-        config_dir = os.path.join(os.environ['XDG_CONFIG_HOME'])
-    elif 'HOME' in os.environ:
-        config_dir = os.path.join(os.environ['HOME'], '.config')
-
-    if config_dir:
-        candidates.append(os.path.join(config_dir, 'shell-craft', 'config.json'))
-
-    filename = None
-    for candidate in candidates:
-        if os.path.exists(candidate):
-            filename = candidate
-            break
-    else:
-        raise ValueError("No API key found")
-
-    with open(filename) as f:
-        config = json.load(f)
-
-    api_key = config.get("openai_api_key")
-    if api_key:
-        return api_key
-
-    raise ValueError("No API key found")
-
-def add_arguments(parser: ArgumentParser):
+def add_arguments(parser: ArgumentParser, config: Configuration = None) -> None:
     """
     Adds '--api-key' to the parser as an argument. If the argument is not
     provided, the API key is retrieved from the environment variable OPENAI_API_KEY,
@@ -92,8 +41,11 @@ def add_arguments(parser: ArgumentParser):
     )
 
     try:
+        if not config:
+            raise ValueError("No config provided")
+        
         if not parser.parse_known_args()[0].api_key:
-            parser.set_defaults(api_key=get_api_key())
+            parser.set_defaults(api_key=config.get_value("openai_api_key"))
     except ValueError:
         print("No API key found. Please provide one with the --api-key argument.")
         parser.print_help()

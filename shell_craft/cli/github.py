@@ -24,6 +24,7 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from urllib.parse import urlencode, urljoin
 
+from shell_craft.configuration import Configuration
 from shell_craft.factories import PromptFactory
 from shell_craft.prompts.templates import (BUG_REPORT_PROMPT,
                                            FEATURE_REQUEST_PROMPT)
@@ -97,58 +98,7 @@ class GitHubArguments:
             body=metadata['about'] + '\n\n' + body.strip()
         )
 
-def get_github_url() -> str:
-    """
-    Gets the Github URL from the environment variable GITHUB_REPOSITORY, or from the
-    config.json file. If neither are found, a ValueError is raised. The config.json
-    file should be in the following format:
-
-    {
-        "github_repository": "https://github.com/username/repository"
-    }
-
-    Raises:
-        ValueError: If no GitHub repository is found.
-
-    Returns:
-        str: The URL to the GitHub repository.
-    """
-    api_key = os.environ.get("GITHUB_REPOSITORY")
-    if api_key:
-        return api_key
-
-    candidates = ["config.json"]
-
-    if 'SHELLCRAFT_CONFIG' in os.environ:
-        candidates.append(os.environ['SHELLCRAFT_CONFIG'])
-
-    config_dir = None
-    if 'XDG_CONFIG_HOME' in os.environ:
-        config_dir = os.path.join(os.environ['XDG_CONFIG_HOME'])
-    elif 'HOME' in os.environ:
-        config_dir = os.path.join(os.environ['HOME'], '.config')
-
-    if config_dir:
-        candidates.append(os.path.join(config_dir, 'shell-craft', 'config.json'))
-
-    filename = None
-    for candidate in candidates:
-        if os.path.exists(candidate):
-            filename = candidate
-            break
-    else:
-        raise ValueError("No GitHub repository found")
-
-    with open(filename) as f:
-        config = json.load(f)
-
-    repository = config.get("github_repository")
-    if not repository:
-        raise ValueError("No GitHub repository found")
-    
-    return repository
-
-def add_arguments(parser: ArgumentParser):
+def add_arguments(parser: ArgumentParser, config: Configuration = None) -> None:
     """
     Adds '--github' argument to the parser. This argument is used to
     specify the URL to the GitHub repository to open an issue or feature
@@ -165,6 +115,8 @@ def add_arguments(parser: ArgumentParser):
 
     try:
         if not parser.parse_known_args()[0].github:
-            parser.set_defaults(github=get_github_url())
+            parser.set_defaults(github=config.get_value('github_repository'))
     except ValueError:
         pass # No GitHub repository found
+
+    print(parser.parse_known_args()[0].github)
