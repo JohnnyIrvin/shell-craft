@@ -19,11 +19,10 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import os
-import pathlib
 from argparse import ArgumentParser
 
 from shell_craft.cli.github import GitHubArguments
-from shell_craft.configuration import AggregateConfiguration, JSONConfiguration
+from shell_craft.configuration import AggregateConfiguration
 from shell_craft.factories import PromptFactory
 from shell_craft.services import OpenAIService, OpenAISettings
 
