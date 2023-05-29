@@ -76,6 +76,7 @@ _COMMANDS = [
     Command(
         flags=['--model'],
         type=str,
+        config='openai_model',
         default="gpt-3.5-turbo",
         action='store',
         help='The OpenAI model to use.',
