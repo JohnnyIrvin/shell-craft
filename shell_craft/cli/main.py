@@ -53,7 +53,11 @@ def _get_configuration() -> AggregateConfiguration:
     Returns:
         AggregateConfiguration: The configuration for the shell-craft CLI.
     """
-    env = DictionaryConfiguration(os.environ)
+    env = DictionaryConfiguration({
+        key.lower(): value
+        for key, value in os.environ.items()
+        if key.isupper()
+    })
     
     paths = [
         os.path.join(os.getcwd(), 'config.json'),

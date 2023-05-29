@@ -18,50 +18,12 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from  .dictionary import DictionaryConfiguration
 
-class AggregateConfiguration:
-    def __init__(self, configurations: list[str]) -> None:
-        self._configs = configurations
-
-    @property
-    def keys(self) -> list[str]:
-        return list(
-            set([
-                key 
-                for config in self._configs
-                for key in config.keys
-            ])
-        )
-    
-    def get_value(self, key: str) -> str | None:
-        """
-        Gets a value from the json text.
-
-        Args:
-            key (str): Looks up the JSON key using this value.
-
-        Returns:
-            str: The value for the key.
-        """        
-        for config in self._configs:
-            if key in config.keys:
-                return config.get_value(key)
-
-        return None
-    
-    def set_value(self, key: str, value: str) -> None:
-        """
-        Sets a value in the json text. Does not save the text to a file.
-
-        Args:
-            key (str): The key to set.
-            value (str): The value to set.
-        """        
-        for config in self._configs:
-            try:
-                config.set_value(key, value)
-                return
-            except KeyError:
-                pass
-
-        raise KeyError(f'Key "{key}" does not exist in any configuration.')
+class AggregateConfiguration(DictionaryConfiguration):
+    def __init__(self, configurations: list) -> None:
+        super().__init__({
+            key: config.get_value(key)
+            for config in configurations[::-1]
+            for key in config.keys
+        })

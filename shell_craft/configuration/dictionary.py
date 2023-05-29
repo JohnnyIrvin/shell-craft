@@ -21,14 +21,16 @@
 
 class DictionaryConfiguration:
     def __init__(self, variables: dict[str, str]) -> None:
-        self._variables = {
-            key.lower(): value
-            for key, value in variables.items()
-            if key.isupper()
-        }
+        self._variables = variables
 
     @property
     def keys(self) -> list[str]:
+        """
+        Gets the keys for the dictionary.
+
+        Returns:
+            list[str]: The keys for the dictionary.
+        """        
         return list(self._variables.keys())
     
     def get_value(self, key: str) -> str | None:
