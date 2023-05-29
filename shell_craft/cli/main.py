@@ -23,27 +23,13 @@ import pathlib
 from argparse import ArgumentParser
 
 from shell_craft.cli.github import GitHubArguments
-from shell_craft.configuration import (AggregateConfiguration,
-                                       JSONConfiguration)
+from shell_craft.configuration import AggregateConfiguration, JSONConfiguration
 from shell_craft.factories import PromptFactory
 from shell_craft.services import OpenAIService, OpenAISettings
 
 from .commands import _COMMANDS
 from .parser import get_arguments, initialize_parser
 
-
-def _read_file(path: str) -> str:
-    """
-    Reads the file at the path and returns the contents.
-
-    Args:
-        path (str): The path to the file to read.
-
-    Returns:
-        str: The contents of the file.
-    """
-    with open(path, 'r') as f:
-        return f.read()
 
 def _get_configuration() -> AggregateConfiguration:
     """
@@ -68,7 +54,7 @@ def _get_configuration() -> AggregateConfiguration:
         paths.append(os.path.join(env.get('XDG_CONFIG_HOME'), 'shell-craft', 'config.json'))
 
     configurations = [
-        JSONConfiguration(_read_file(path))
+        JSONConfiguration.from_file(path)
         for path in paths
         if path and pathlib.Path(path).expanduser().exists()
     ]
