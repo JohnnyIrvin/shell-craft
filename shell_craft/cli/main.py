@@ -24,7 +24,6 @@ from argparse import ArgumentParser
 
 from shell_craft.cli.github import GitHubArguments
 from shell_craft.configuration import (AggregateConfiguration,
-                                       DictionaryConfiguration,
                                        JSONConfiguration)
 from shell_craft.factories import PromptFactory
 from shell_craft.services import OpenAIService, OpenAISettings
@@ -53,20 +52,20 @@ def _get_configuration() -> AggregateConfiguration:
     Returns:
         AggregateConfiguration: The configuration for the shell-craft CLI.
     """
-    env = DictionaryConfiguration({
+    env = {
         key.lower(): value
         for key, value in os.environ.items()
         if key.isupper()
-    })
+    }
     
     paths = [
         os.path.join(os.getcwd(), 'config.json'),
-        env.get_value('SHELLCRAFT_CONFIG'),
+        env.get('SHELLCRAFT_CONFIG'),
         os.path.join('~', '.config', 'shell-craft', 'config.json')
     ]
 
-    if env.get_value('XDG_CONFIG_HOME'):
-        paths.append(os.path.join(env.get_value('XDG_CONFIG_HOME'), 'shell-craft', 'config.json'))
+    if env.get('XDG_CONFIG_HOME'):
+        paths.append(os.path.join(env.get('XDG_CONFIG_HOME'), 'shell-craft', 'config.json'))
 
     configurations = [
         JSONConfiguration(_read_file(path))
