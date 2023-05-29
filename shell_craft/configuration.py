@@ -36,6 +36,20 @@ class JSONConfiguration(dict):
         """        
         super().__init__(json.loads(text))
 
+    @classmethod
+    def from_file(cls, path: str) -> "JSONConfiguration":
+        """
+        Initialize the JSON configuration from the given file.
+
+        Args:
+            path (str): The path to the JSON file.
+
+        Returns:
+            JSONConfiguration: The JSON configuration.
+        """        
+        with open(path, "r") as file:
+            return cls(file.read())
+
 class AggregateConfiguration(dict):
     def __init__(self, configurations: list) -> None:
         """

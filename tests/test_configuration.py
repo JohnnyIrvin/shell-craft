@@ -18,6 +18,8 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from unittest.mock import mock_open, patch
+
 import pytest
 from shell_craft.configuration import (AggregateConfiguration, Configuration,
                                        JSONConfiguration)
@@ -60,3 +62,9 @@ def test_get(configuration: Configuration, key: str, value: str) -> None:
 ])
 def test_get_keys(configuration: Configuration, keys: list[str]) -> None:
     assert list(configuration.keys()) == keys
+
+def test_json_from_file() -> None:
+    with patch("builtins.open", mock_open(read_data="""{
+        "key": "json"
+    }""")):
+        assert JSONConfiguration.from_file("file.json").get("key") == "json"
