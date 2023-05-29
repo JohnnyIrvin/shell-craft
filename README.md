@@ -47,15 +47,22 @@ The following example shows how to use Shell Craft inside of your own Python cod
 ```python
 import os
 
-from shell_craft import Service
+from shell_craft.services import OpenAIService, OpenAISettings
 from shell_craft.prompts import BASH_PROMPT
 
-Service(
-    api_key = os.environ.get("OPENAI_API_KEY"),
-    prompt = BASH_PROMPT,
+results = OpenAIService(
+    OpenAISettings(
+        api_key = os.environ.get("OPENAI_API_KEY"),
+        model='gpt-3.5-turbo',
+        count=1,
+        temperature=0.0,
+        messages=BASH_PROMPT.messages,
+    )
 ).query(
     message = input("Enter your request: ")
 )
+
+print(results)
 ```
 
 ## API Key
