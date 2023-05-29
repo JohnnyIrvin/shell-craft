@@ -102,6 +102,7 @@ _COMMANDS = [
         flags=['-c', '--count'],
         dest='count',
         type=int,
+        config='openai_count',
         default=1,
         action='store',
         help='The number of responses to generate.',
