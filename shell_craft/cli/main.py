@@ -38,29 +38,20 @@ def _get_configuration() -> AggregateConfiguration:
     Returns:
         AggregateConfiguration: The configuration for the shell-craft CLI.
     """
-    env = {
-        key.lower(): value
-        for key, value in os.environ.items()
-        if key.isupper()
-    }
-    
     paths = [
         os.path.join(os.getcwd(), 'config.json'),
-        env.get('SHELLCRAFT_CONFIG'),
-        os.path.join('~', '.config', 'shell-craft', 'config.json')
+        os.environ.get('SHELLCRAFT_CONFIG'),
+        '~/.config/shell-craft/config.json'
     ]
 
-    if env.get('XDG_CONFIG_HOME'):
-        paths.append(os.path.join(env.get('XDG_CONFIG_HOME'), 'shell-craft', 'config.json'))
+    if os.environ.get('XDG_CONFIG_HOME'):
+        paths.append(os.path.join(os.environ.get('XDG_CONFIG_HOME'), 'shell-craft', 'config.json'))
 
-    configurations = [
-        JSONConfiguration.from_file(path)
-        for path in paths
-        if path and pathlib.Path(path).expanduser().exists()
-    ]
-
-    configurations.append(env)
-    return AggregateConfiguration(configurations)
+    return AggregateConfiguration.from_files(paths) + {
+        key.lower(): value
+        for key, value in os.environ.items() 
+        if key.isupper()
+    }
 
 def get_github_url_or_error(prompt: str, repository: str) -> str:
     """
