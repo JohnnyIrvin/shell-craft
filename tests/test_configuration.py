@@ -34,7 +34,7 @@ def json_configuration() -> JSONConfiguration:
 def dictionary_configuration() -> DictionaryConfiguration:
     return DictionaryConfiguration(
         variables={
-            "KEY": "dictionary"
+            "key": "dictionary"
         }
     )
 
