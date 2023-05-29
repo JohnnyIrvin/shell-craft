@@ -19,14 +19,32 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from argparse import ArgumentTypeError
+from typing import Callable
 
 
-def limited_float(min: float, max: float):
-    def _ret_func(arg: str):
-        if not str(arg).isdecimal:
+def limited_float(min: float, max: float) -> Callable:
+    """
+    Create a function that will validate a float is between the given min and
+    max values for use with argparse.
+
+    Args:
+        min (float): The minimum value for the float.
+        max (float): The maximum value for the float.
+
+    Returns:
+        Callable: A function that will validate a float is between the given min
+    """    
+    def _ret_func(arg: str) -> float:
+        if arg is None or not str(arg).isdecimal:
             raise ArgumentTypeError(f"{arg} is not a decimal")
         
         f = float(arg)
+        if f in [float("inf"), float("-inf")]:
+            raise ArgumentTypeError(f"{arg} is not a decimal")
+        
+        if f != f:
+            raise ArgumentTypeError(f"{arg} is not a decimal")
+
         if f < min or f > max:
             raise ArgumentTypeError(f"{arg} is not between {min} and {max}")
         
