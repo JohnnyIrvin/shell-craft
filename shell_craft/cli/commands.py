@@ -93,6 +93,7 @@ _COMMANDS = [
         flags=['-t', '--temperature'],
         dest='temperature',
         type=limited_float(0.0, 2.0),
+        config='openai_temperature',
         default=1.0,
         action='store',
         help='The temperature to use when generating text. Must be between 0 and 2.',
