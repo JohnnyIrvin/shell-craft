@@ -33,26 +33,21 @@ class AggregateConfiguration:
             ])
         )
     
-    def get_value(self, key: str) -> str:
+    def get_value(self, key: str) -> str | None:
         """
         Gets a value from the json text.
 
         Args:
             key (str): Looks up the JSON key using this value.
 
-        Raises:
-            KeyError: If the key does not exist in the JSON text.
-
         Returns:
             str: The value for the key.
         """        
         for config in self._configs:
-            try:
+            if key in config.keys:
                 return config.get_value(key)
-            except KeyError:
-                pass
 
-        raise KeyError(f'Key "{key}" does not exist in any configuration.')
+        return None
     
     def set_value(self, key: str, value: str) -> None:
         """
