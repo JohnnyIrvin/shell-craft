@@ -11,3 +11,6 @@ config.json
 # Ignore Build
 dist/
 *.egg-info/
+
+# Ignore Coverage
+.coverage
