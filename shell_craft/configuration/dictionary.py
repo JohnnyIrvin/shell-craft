@@ -31,20 +31,17 @@ class DictionaryConfiguration:
     def keys(self) -> list[str]:
         return list(self._variables.keys())
     
-    def get_value(self, key: str) -> str:
+    def get_value(self, key: str) -> str | None:
         """
         Gets a value from the json text.
 
         Args:
             key (str): Looks up the JSON key using this value.
 
-        Raises:
-            KeyError: If the key does not exist in the JSON text.
-
         Returns:
             str: The value for the key.
         """        
-        return self._variables[key.lower()]
+        return self._variables.get(key.lower())
     
     def set_value(self, key: str, value: str) -> None:
         """

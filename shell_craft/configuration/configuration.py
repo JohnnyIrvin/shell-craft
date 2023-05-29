@@ -26,7 +26,7 @@ class Configuration(Protocol):
     def keys(self) -> list[str]:
         ...
     
-    def get_value(self, key: str) -> str:
+    def get_value(self, key: str) -> str | None:
         ...
 
     def set_value(self, key: str, value: str) -> None:
