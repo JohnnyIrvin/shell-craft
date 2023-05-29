@@ -46,7 +46,7 @@ def _get_configuration() -> AggregateConfiguration:
     if os.environ.get('XDG_CONFIG_HOME'):
         paths.append(os.path.join(os.environ.get('XDG_CONFIG_HOME'), 'shell-craft', 'config.json'))
 
-    return AggregateConfiguration.from_files(paths) + {
+    return AggregateConfiguration.from_files(paths) | {
         key.lower(): value
         for key, value in os.environ.items() 
         if key.isupper()
