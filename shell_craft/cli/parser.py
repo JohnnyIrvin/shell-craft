@@ -19,147 +19,151 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from argparse import ArgumentParser, Namespace
-from importlib import import_module
-from os import listdir
-from os.path import dirname
 from sys import argv, stdin
+from typing import Callable
 
 from shell_craft.configuration import Configuration
+from shell_craft.factories import PromptFactory
+from dataclasses import asdict
+
+from .commands import Command, CommandGroup, CommandRestriction
 
 
-def _has_required_args(module: "ModuleType", args: Namespace) -> bool:
-    """
-    Checks if the module has the required arguments. If the module does not
-    have the ARGUMENTS attribute, then it is assumed that the module does not
-    require any arguments. If the module does have the ARGUMENTS attribute,
-    then it is assumed that the module requires arguments as long as the
-    ARGUMENTS attribute is a dictionary
-    
-    If the ARGUMENTS attribute is a dictionary, then the module will be checked
-    to see if it has all of the required arguments. If the module has all of the
-    required arguments, then the module will be checked to see if the values of
-    the required arguments match the values of the arguments passed to the parser.
-    
-    If the values of the required arguments match the values of the arguments
-    passed to the parser, are in a list of acceptable values, or pass a callable
-    function, then the module will be considered to have the required arguments.
+class ShellCraftParser:
+    def __init__(self, parser: ArgumentParser, config: Configuration) -> None:
+        """
+        Initialize the application parser with the given argparse parser. This
+        is known as a proxy pattern or facade pattern.
 
-    Args:
-        module (ModuleType): The module to check for required arguments.
-        args (Namespace): The arguments passed to the parser.
+        Args:
+            parser (ArgumentParser): The argparse parser to use for the application.
+        """        
+        self._parser = parser
+        self._config = config
+        self._commands: list[Command | CommandGroup] = []
 
-    Returns:
-        bool: True if the module has the required arguments, False otherwise.
-    """    
-    if not hasattr(module, "ARGUMENTS"):
-        return True
+    @property
+    def flags(self) -> list[str]:
+        """
+        Get the flags for the parser.
+
+        Returns:
+            list[str]: The flags for the parser.
+        """
+        return [
+            flag
+            for command in self._commands
+            for flag in command.flags
+        ]
+
+    def add_command(self, command: Command, override: Callable = None) -> "ShellCraftParser":
+        """
+        Add a command to the parser.
+
+        Args:
+            command (Command): The command to add to the parser.
+            override (Callable, optional): A function to call to override
+                the add_argument function. Defaults to None.
+
+        Returns:
+            ShellCraftParser: The parser with the command added.
+        """
+        adder = override or self._parser.add_argument
+
+        flags = ' '.join(command.flags)
+        kwargs = {
+            key: value
+            for key, value in asdict(command).items()
+            if value is not None
+            and key not in ['flags', 'restrictions', 'config']
+        }
+        kwargs['default'] = self._config.get_value(command.config) or command.default
+
+        adder(flags, **kwargs)
+        self._commands.append(command)
+
+        return self
     
-    if not isinstance(module.ARGUMENTS, dict):
-        return True
-    
-    for key in module.ARGUMENTS:
-        if key not in args:
+    def add_group(self, group: CommandGroup) -> "ShellCraftParser":
+        """
+        Add a command group to the parser.
+
+        Args:
+            group (CommandGroup): The command group to add to the parser.
+
+        Returns:
+            ShellCraftParser: The parser with the command group added.
+        """
+        adder = self._parser.add_argument
+        if group.exclusive:
+            adder = self._parser.add_mutually_exclusive_group().add_argument
+
+        for command in group.commands:
+            self.add_command(command, adder)
+
+        return self
+
+    def can_add(self, command: Command | CommandGroup) -> bool:
+        """
+        Determine if the given command can be added to the parser.
+
+        Args:
+            command (Command): The command to check.
+
+        Returns:
+            bool: True if the command can be added, otherwise False.
+        """
+        if not command.restrictions:
+            return True
+        
+        if '--prompt' not in self.flags:
             return False
         
-        arg_value = getattr(args, key)
-        mod_value = module.ARGUMENTS[key]
-
-        if isinstance(mod_value, str) and arg_value != mod_value:
-            return False
-
-        if isinstance(mod_value, list) and arg_value not in mod_value:
+        known_args, l = self._parser.parse_known_args()
+        if not known_args.prompt:
             return False
         
-        if callable(mod_value) and not mod_value(arg_value):
-            return False
+        prompt = PromptFactory.get_prompt(known_args.prompt)
+        
+        for restriction in command.restrictions:
+            if restriction == CommandRestriction.PROMPT_TYPE:
+                if type(prompt).__name__ in command.restrictions[restriction]:
+                    continue
+
+            if restriction == CommandRestriction.PROMPT_NAME:
+                prompt_name = known_args.prompt.upper() + "_PROMPT"
+
+                if prompt_name in command.restrictions[restriction]:
+                    continue
             
-    return True
+            return False
+        
+        return True
 
-def _add_args_parser(parser: ArgumentParser, module: "ModuleType", args: Namespace, configuration: Configuration = None):
-    """
-    Adds the given module's subparsers and arguments to the parser.
-    
-    Args:
-        parser (ArgumentParser): The parser to add the module to.
-        module (ModuleType): The module to check for required arguments.
-        args (Namespace): The arguments passed to the parser.
-        configuration (Configuration): The configuration to use for the module.
-    """
-    if hasattr(module, "add_parser") and "config" in module.add_parser.__code__.co_varnames:
-        module.add_parser(parser, config=configuration)
-    elif hasattr(module, "add_parser"):
-        module.add_parser(parser)
 
-    if hasattr(module, "add_arguments") and "config" in module.add_arguments.__code__.co_varnames:
-        module.add_arguments(parser, config=configuration)
-    elif hasattr(module, "add_arguments"):
-        module.add_arguments(parser)
-
-def _add_optional_args_parser(parser: ArgumentParser, module: "ModuleType", args: Namespace, configuration: Configuration = None):
+def initialize_parser(parser: ArgumentParser, commands: list[Command | CommandGroup], configuration: Configuration) -> ArgumentParser:
     """
-    Checks if the module's required arguments are present in the arguments
-    passed to the parser. The module will be checked to see if it has all
-    of the required arguments. If the module has all of the required
-    arguments, then the module will be added to the parser.
+    Initialize the parser with the given commands and command groups. This will add
+    the commands and command groups to the parser and return the parser.
 
     Args:
-        parser (ArgumentParser): The parser to add the module to.
-        module (ModuleType): The module to check for required arguments.
-        args (Namespace): The arguments passed to the parser.
-        configuration (Configuration): The configuration to use for the module.
-    """
-    if not _has_required_args(module, args):
-        return
-    
-    _add_args_parser(parser, module, args, configuration)
-
-def initialize_parser(parser: ArgumentParser, configuration: Configuration = None) -> ArgumentParser:
-    """ 
-    Add arguments to the parser. Loops through all modules in this package and
-    calls the add_arguments function in each one if it exists and is callable.
-    The modules are imported dynamically, so adding a new module to this package
-    will automatically add its arguments to the parser as long as the module
-    has an add_arguments function.
-
-    While looping through each module in this package, we'll attempt to add
-    any subparsers that are defined in the module. Modules which contain
-    subparsers should define add_parser as a function which takes a parser as
-    an argument.
-
-    This function will skip the main and parser modules, as they are not
-    intended to be used as subparsers or intended to add arguments to the
-    parser.
-
-    Args:
-        parser (ArgumentParser): The parser to add arguments to.
-        configuration (Configuration): The configuration to use for the module.
+        parser (ArgumentParser): The parser to initialize.
+        commands (list[Command  |  CommandGroup]): The commands and command groups to add to the parser.
+        configuration (Configuration): The configuration to use for the parser.
 
     Returns:
-        ArgumentParser: The parser with arguments added. Fluent interface.
+        ArgumentParser: The parser with the commands and command groups added.
     """
-    PARENT_PACKAGE = __name__.rsplit(".", 1)[0]
-    modules: list["ModuleType"] = [
-        import_module(f".{module.removesuffix('.py')}", package=PARENT_PACKAGE)
-        for module in listdir(dirname(__file__))
-        if module.endswith(".py") and
-        module not in ["main.py", "parser.py", "__init__.py"]
-    ]
+    _parser = ShellCraftParser(parser, configuration)
+    for command in commands:
+        if not _parser.can_add(command):
+            continue
 
-    modules_without_requirements = [
-        module for module in modules if not hasattr(module, "ARGUMENTS")
-    ]
-    modules_with_requirements = [
-        module for module in modules if hasattr(module, "ARGUMENTS")
-    ]
-
-    KNOWN_ARGS, _ = parser.parse_known_args()
-    for module in modules_without_requirements:
-        _add_args_parser(parser, module, KNOWN_ARGS, configuration)
-
-    KNOWN_ARGS, _ = parser.parse_known_args() # More arguments may have been added
-    for module in modules_with_requirements:
-        _add_optional_args_parser(parser, module, KNOWN_ARGS, configuration)
-
+        if isinstance(command, Command):
+            _parser.add_command(command)
+        elif isinstance(command, CommandGroup):
+            _parser.add_group(command)
+        
     return parser
 
 def get_arguments(parser: ArgumentParser) -> Namespace:

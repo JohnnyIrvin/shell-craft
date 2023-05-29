@@ -29,7 +29,9 @@ from shell_craft.configuration import (AggregateConfiguration,
                                        JSONConfiguration)
 from shell_craft.factories import PromptFactory
 
+from .commands import _COMMANDS
 from .parser import get_arguments, initialize_parser
+
 
 def _read_file(path: str) -> str:
     """
@@ -104,6 +106,7 @@ def main():
                 description="Generating shell commands and code using natural language models (OpenAI ChatGPT).",
                 add_help=False
             ),
+            commands=_COMMANDS,
             configuration=_get_configuration()
         ),
     )

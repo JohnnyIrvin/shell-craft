@@ -18,20 +18,9 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import json
-import os
-from argparse import ArgumentParser
 from dataclasses import dataclass
 from urllib.parse import urlencode, urljoin
 
-from shell_craft.configuration import Configuration
-from shell_craft.factories import PromptFactory
-from shell_craft.prompts.templates import (BUG_REPORT_PROMPT,
-                                           FEATURE_REQUEST_PROMPT)
-
-ARGUMENTS = {
-    'prompt': lambda x: PromptFactory.get_prompt(x) in [ BUG_REPORT_PROMPT, FEATURE_REQUEST_PROMPT ]
-}
 
 @dataclass
 class GitHubArguments:
@@ -97,25 +86,3 @@ class GitHubArguments:
             labels=metadata['labels'].split(','),
             body=metadata['about'] + '\n\n' + body.strip()
         )
-
-def add_arguments(parser: ArgumentParser, config: Configuration = None) -> None:
-    """
-    Adds '--github' argument to the parser. This argument is used to
-    specify the URL to the GitHub repository to open an issue or feature
-    request for.
-
-    Args:
-        parser (ArgumentParser): The parser to add the argument to.
-    """
-    parser.add_argument(
-        '--github',
-        type=str,
-        help='The URL to the GitHub repository to open an issue or feature request for.'
-    )
-
-    if not config:
-        return
-    
-    github_repo = config.get_value('github_repository')
-    if github_repo:
-        parser.set_defaults(github=github_repo)

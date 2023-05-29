@@ -18,20 +18,18 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from argparse import ArgumentParser
+from argparse import ArgumentTypeError
 
 
-def add_arguments(parser: ArgumentParser):
-    """
-    Adds 'request' argument to the parser. This argument is used to
-    specify the input to prompt the API with. This argument is required,
-    however, it can be piped in from another command or from a file.
-
-    Args:
-        parser (ArgumentParser): The parser to add the argument to.
-    """    
-    parser.add_argument(
-        "request",
-        type=str,
-        nargs="*",
-    )
+def limited_float(min: float, max: float):
+    def _ret_func(arg: str):
+        if not str(arg).isdecimal:
+            raise ArgumentTypeError(f"{arg} is not a decimal")
+        
+        f = float(arg)
+        if f < min or f > max:
+            raise ArgumentTypeError(f"{arg} is not between {min} and {max}")
+        
+        return f
+    
+    return _ret_func
