@@ -110,6 +110,7 @@ _COMMANDS = [
     Command(
         flags=['--prompt'],
         dest='prompt',
+        config='shell_craft_prompt',
         type=str,
         choices=[
             prompt.removesuffix('_PROMPT').lower()
