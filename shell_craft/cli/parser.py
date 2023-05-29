@@ -24,6 +24,8 @@ from os import listdir
 from os.path import dirname
 from sys import argv, stdin
 
+from shell_craft.configuration import Configuration
+
 
 def _has_required_args(module: "ModuleType", args: Namespace) -> bool:
     """
@@ -73,7 +75,7 @@ def _has_required_args(module: "ModuleType", args: Namespace) -> bool:
             
     return True
 
-def _add_args_parser(parser: ArgumentParser, module: "ModuleType", args: Namespace):
+def _add_args_parser(parser: ArgumentParser, module: "ModuleType", args: Namespace, configuration: Configuration = None):
     """
     Adds the given module's subparsers and arguments to the parser.
     
@@ -81,14 +83,19 @@ def _add_args_parser(parser: ArgumentParser, module: "ModuleType", args: Namespa
         parser (ArgumentParser): The parser to add the module to.
         module (ModuleType): The module to check for required arguments.
         args (Namespace): The arguments passed to the parser.
+        configuration (Configuration): The configuration to use for the module.
     """
-    if hasattr(module, "add_parser"):
+    if hasattr(module, "add_parser") and "config" in module.add_parser.__code__.co_varnames:
+        module.add_parser(parser, config=configuration)
+    elif hasattr(module, "add_parser"):
         module.add_parser(parser)
 
-    if hasattr(module, "add_arguments"):
+    if hasattr(module, "add_arguments") and "config" in module.add_arguments.__code__.co_varnames:
+        module.add_arguments(parser, config=configuration)
+    elif hasattr(module, "add_arguments"):
         module.add_arguments(parser)
 
-def _add_optional_args_parser(parser: ArgumentParser, module: "ModuleType", args: Namespace):
+def _add_optional_args_parser(parser: ArgumentParser, module: "ModuleType", args: Namespace, configuration: Configuration = None):
     """
     Checks if the module's required arguments are present in the arguments
     passed to the parser. The module will be checked to see if it has all
@@ -99,13 +106,14 @@ def _add_optional_args_parser(parser: ArgumentParser, module: "ModuleType", args
         parser (ArgumentParser): The parser to add the module to.
         module (ModuleType): The module to check for required arguments.
         args (Namespace): The arguments passed to the parser.
+        configuration (Configuration): The configuration to use for the module.
     """
     if not _has_required_args(module, args):
         return
     
-    _add_args_parser(parser, module, args)
+    _add_args_parser(parser, module, args, configuration)
 
-def initialize_parser(parser: ArgumentParser) -> ArgumentParser:
+def initialize_parser(parser: ArgumentParser, configuration: Configuration = None) -> ArgumentParser:
     """ 
     Add arguments to the parser. Loops through all modules in this package and
     calls the add_arguments function in each one if it exists and is callable.
@@ -124,6 +132,7 @@ def initialize_parser(parser: ArgumentParser) -> ArgumentParser:
 
     Args:
         parser (ArgumentParser): The parser to add arguments to.
+        configuration (Configuration): The configuration to use for the module.
 
     Returns:
         ArgumentParser: The parser with arguments added. Fluent interface.
@@ -145,11 +154,11 @@ def initialize_parser(parser: ArgumentParser) -> ArgumentParser:
 
     KNOWN_ARGS, _ = parser.parse_known_args()
     for module in modules_without_requirements:
-        _add_args_parser(parser, module, KNOWN_ARGS)
+        _add_args_parser(parser, module, KNOWN_ARGS, configuration)
 
     KNOWN_ARGS, _ = parser.parse_known_args() # More arguments may have been added
     for module in modules_with_requirements:
-        _add_optional_args_parser(parser, module, KNOWN_ARGS)
+        _add_optional_args_parser(parser, module, KNOWN_ARGS, configuration)
 
     return parser
 
