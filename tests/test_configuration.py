@@ -68,3 +68,10 @@ def test_json_from_file() -> None:
         "key": "json"
     }""")):
         assert JSONConfiguration.from_file("file.json").get("key") == "json"
+
+def test_aggregate_from_files() -> None:
+    with patch("builtins.open", mock_open(read_data="""{
+        "key": "json"
+    }""")):
+        with patch("pathlib.Path.exists", return_value=True):
+            assert AggregateConfiguration.from_files(["file.json"]).get("key") == "json"

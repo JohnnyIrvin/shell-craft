@@ -20,6 +20,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import json
 from typing import Any, Protocol
+import pathlib
 
 
 class Configuration(Protocol):
@@ -63,3 +64,22 @@ class AggregateConfiguration(dict):
             for config in configurations[::-1]
             for key in config.keys()
         })
+
+    @classmethod
+    def from_files(cls, paths: list[str]) -> "AggregateConfiguration":
+        """
+        Initialize the aggregate configuration from the given files.
+
+        If a file does not exist, it will be ignored.
+
+        Args:
+            paths (list[str]): The paths to the JSON files.
+
+        Returns:
+            AggregateConfiguration: The aggregate configuration.
+        """
+        return cls([
+            JSONConfiguration.from_file(path)
+            for path in paths
+            if pathlib.Path(path).exists()
+        ])
