@@ -18,12 +18,9 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from argparse import ArgumentParser
 from os import getppid
 
 from psutil import NoSuchProcess, Process
-
-import shell_craft.prompts as prompts
 
 
 def get_calling_shell() -> str:
@@ -46,26 +43,3 @@ def get_calling_shell() -> str:
         )
     except NoSuchProcess:
         return "bash"
-
-
-def add_arguments(parser: ArgumentParser):
-    """
-    Adds '--prompt' as an argument to the parser. The choices are the names of
-    the prompts in the prompts module, without the '_PROMPT' suffix, and converted to
-    lowercase. The default is the name of the shell that called this script.
-
-    Args:
-        parser (ArgumentParser): The parser to add the argument to.
-    """    
-    parser.add_argument(
-        "--prompt",
-        type=str,
-        choices=[
-            prompt.removesuffix('_PROMPT').lower()
-            for prompt in dir(prompts)
-            if prompt.endswith("PROMPT")
-        ],
-        help="The type of prompt to use.",
-        nargs='?',
-        default=get_calling_shell()
-    )
