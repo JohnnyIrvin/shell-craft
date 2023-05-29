@@ -113,10 +113,9 @@ def add_arguments(parser: ArgumentParser, config: Configuration = None) -> None:
         help='The URL to the GitHub repository to open an issue or feature request for.'
     )
 
-    try:
-        if not parser.parse_known_args()[0].github:
-            parser.set_defaults(github=config.get_value('github_repository'))
-    except ValueError:
-        pass # No GitHub repository found
-
-    print(parser.parse_known_args()[0].github)
+    if not config:
+        return
+    
+    github_repo = config.get_value('github_repository')
+    if github_repo:
+        parser.set_defaults(github=github_repo)

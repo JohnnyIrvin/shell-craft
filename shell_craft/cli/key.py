@@ -40,13 +40,10 @@ def add_arguments(parser: ArgumentParser, config: Configuration = None) -> None:
         help="The OpenAI API key to use.",
     )
 
-    try:
-        if not config:
-            raise ValueError("No config provided")
-        
-        if not parser.parse_known_args()[0].api_key:
-            parser.set_defaults(api_key=config.get_value("openai_api_key"))
-    except ValueError:
-        print("No API key found. Please provide one with the --api-key argument.")
-        parser.print_help()
-        exit(1)
+    if not config:
+        return
+    
+    api_key = config.get_value("openai_api_key")
+    if api_key:
+        parser.set_defaults(api_key=api_key)
+
