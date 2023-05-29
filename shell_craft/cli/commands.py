@@ -124,7 +124,6 @@ _COMMANDS = [
     ),
     Command(
         flags=['--github'],
-        dest='github_repository',
         type=str,
         config='github_repository',
         action='store',
