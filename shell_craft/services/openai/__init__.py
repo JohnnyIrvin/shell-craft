@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Johnathan P. Irvin and contributors
+# Copyright (c) 2023 Johnathan P. Irvin
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -18,39 +18,9 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from .service import OpenAIService, OpenAISettings
 
-class DictionaryConfiguration:
-    def __init__(self, variables: dict[str, str]) -> None:
-        self._variables = variables
-
-    @property
-    def keys(self) -> list[str]:
-        """
-        Gets the keys for the dictionary.
-
-        Returns:
-            list[str]: The keys for the dictionary.
-        """        
-        return list(self._variables.keys())
-    
-    def get_value(self, key: str) -> str | None:
-        """
-        Gets a value from the json text.
-
-        Args:
-            key (str): Looks up the JSON key using this value.
-
-        Returns:
-            str: The value for the key.
-        """        
-        return self._variables.get(key)
-    
-    def set_value(self, key: str, value: str) -> None:
-        """
-        Sets a value in the json text. Does not save the text to a file.
-
-        Args:
-            key (str): The key to set.
-            value (str): The value to set.
-        """        
-        self._variables[key] = value
+__all__ = [
+    'OpenAIService',
+    'OpenAISettings',
+]

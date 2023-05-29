@@ -22,12 +22,12 @@ import os
 import pathlib
 from argparse import ArgumentParser
 
-from shell_craft import Service
 from shell_craft.cli.github import GitHubArguments
 from shell_craft.configuration import (AggregateConfiguration,
                                        DictionaryConfiguration,
                                        JSONConfiguration)
 from shell_craft.factories import PromptFactory
+from shell_craft.services import OpenAIService, OpenAISettings
 
 from .commands import _COMMANDS
 from .parser import get_arguments, initialize_parser
@@ -103,6 +103,7 @@ def main():
     Main function that processes the command-line arguments and queries the
     OpenAI API using shell_craft.
     """
+    config = _get_configuration()
     args = get_arguments(
         initialize_parser(
             ArgumentParser(
@@ -111,7 +112,7 @@ def main():
                 add_help=False
             ),
             commands=_COMMANDS,
-            configuration=_get_configuration()
+            configuration=config
         ),
     )
     prompt = PromptFactory.get_prompt(args.prompt)
@@ -123,28 +124,21 @@ def main():
     elif getattr(args, "test", False):
         prompt = prompt.testing
 
-    result = (
-        Service(
+    results = OpenAIService(
+        OpenAISettings(
             api_key=args.api_key,
-            prompt=prompt,
-            model=args.model
-        ).query(
-            message=' '.join(args.request),
+            model=args.model,
             count=args.count,
-            temperature=args.temperature
+            temperature=args.temperature,
+            messages=prompt.messages,
         )
+    ).query(
+        message=' '.join(args.request),
     )
 
     github_url = getattr(args, "github", None)
-    if isinstance(result, list):
-        for _, r in enumerate(result):
-            if github_url:
-                print(get_github_url_or_error(r, github_url))
-            else:
-                print(r)
-        exit(0)
-
-    if github_url:
-        print(get_github_url_or_error(result, github_url))
-    else:
-        print(result)
+    for _, r in enumerate(results):
+        if github_url:
+            print(get_github_url_or_error(r, github_url))
+        else:
+            print(r)
