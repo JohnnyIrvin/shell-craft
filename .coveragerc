@@ -1,0 +1,9 @@
+[run]
+omit =
+    */__main__.py
+    */__init__.py
+    */tests/*
+
+[report]
+exclude_also:
+    class .*\bProtocol\):
