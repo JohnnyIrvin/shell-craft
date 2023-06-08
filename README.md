@@ -1,4 +1,4 @@
-# Shell Craft
+# Shell 🐢 Craft 🪡
 
 [![PyPI version](https://img.shields.io/pypi/v/openai-shell-craft?color=green&label=PyPI)](https://pypi.org/project/openai-shell-craft/) [![codecov](https://codecov.io/gh/JohnnyIrvin/shell-craft/branch/trunk/graph/badge.svg?token=MKYZOJR8SQ)](https://codecov.io/gh/JohnnyIrvin/shell-craft)
 
