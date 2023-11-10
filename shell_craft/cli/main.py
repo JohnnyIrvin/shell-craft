@@ -19,6 +19,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import os
+import pathlib
 from argparse import ArgumentParser
 
 from shell_craft.cli.github import GitHubArguments
@@ -37,14 +38,25 @@ def _get_configuration() -> AggregateConfiguration:
     Returns:
         AggregateConfiguration: The configuration for the shell-craft CLI.
     """
+    expand = lambda path: pathlib.Path(path).expanduser().absolute().as_posix()
+    join_expand = lambda *paths: expand(os.path.join(*paths))
+    
     paths = [
-        os.path.join(os.getcwd(), 'config.json'),
-        os.environ.get('SHELLCRAFT_CONFIG'),
-        '~/.config/shell-craft/config.json'
+        expand(os.path.join(os.getcwd(), 'config.json')),
+        expand('~/.shell-craft/config.json'),
     ]
+    
+    if os.environ.get('SHELLCRAFT_CONFIG'):
+        paths.append(expand(os.environ.get('SHELLCRAFT_CONFIG')))
 
     if os.environ.get('XDG_CONFIG_HOME'):
-        paths.append(os.path.join(os.environ.get('XDG_CONFIG_HOME'), 'shell-craft', 'config.json'))
+        paths.append(
+            join_expand(
+                os.environ.get('XDG_CONFIG_HOME'),
+                'shell-craft',
+                'config.json'
+            )
+        )
 
     return AggregateConfiguration.from_files(paths) | {
         key.lower(): value
