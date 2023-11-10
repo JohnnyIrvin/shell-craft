@@ -6,7 +6,8 @@ from typing import Optional
 import pytest
 
 from shell_craft.cli.main import (AggregateConfiguration, _generate_service,
-                                  _get_configuration, _get_sub_prompt_name)
+                                  _get_configuration, _get_prompt,
+                                  _get_sub_prompt_name)
 from shell_craft.prompts.languages import BASH_PROMPT
 
 
@@ -125,3 +126,23 @@ def test_generate_service(namespace: Namespace, setting: str, expected: str):
     
     # Assert
     assert getattr(service._settings, setting) == expected
+    
+@pytest.mark.parametrize(
+    "subprompt, expected",
+    [
+        ("refactor", BASH_PROMPT.refactoring),
+        ("document", BASH_PROMPT.documentation),
+        ("test", BASH_PROMPT.testing),
+        ("notimplemented", BASH_PROMPT),
+        (None, BASH_PROMPT),
+    ]
+)
+def test_get_prompt(namespace: Namespace, subprompt: str, expected: str):
+    """
+    Tests that the prompt is generated correctly.
+    """
+    # Act
+    prompt = _get_prompt("bash", subprompt)
+    
+    # Assert
+    assert prompt == expected.messages

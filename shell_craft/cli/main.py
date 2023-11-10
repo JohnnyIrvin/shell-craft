@@ -133,7 +133,8 @@ def _get_prompt(prompt_name: str, sub_prompt_name: Optional[str] = None) -> str:
     prompt = PromptFactory.get_prompt(prompt_name)
     
     if sub_prompt_name:
-        prompt = getattr(prompt, subprompts[sub_prompt_name])
+        sub_prompt = subprompts.get(sub_prompt_name, '')
+        prompt = getattr(prompt, sub_prompt, prompt)
         
     return prompt.messages
 
