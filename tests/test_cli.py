@@ -7,7 +7,7 @@ import pytest
 
 from shell_craft.cli.main import (AggregateConfiguration, _generate_service,
                                   _get_configuration, _get_prompt,
-                                  _get_sub_prompt_name)
+                                  _get_sub_prompt_name, _single_request)
 from shell_craft.prompts.languages import BASH_PROMPT
 
 
@@ -31,7 +31,8 @@ def namespace() -> Namespace:
         model="test",
         count=1,
         temperature=1,
-        prompt="bash"
+        prompt="bash",
+        request="test",
     )
 
 @pytest.mark.parametrize(
@@ -146,3 +147,18 @@ def test_get_prompt(namespace: Namespace, subprompt: str, expected: str):
     
     # Assert
     assert prompt == expected.messages
+
+def test_single_request_prints_response(namespace: Namespace):
+    """
+    Tests that the single request prints the response.
+    """
+    # Arrange
+    service = _generate_service(namespace)
+    with unittest.mock.patch.object(service, 'query') as service_mock:
+        service_mock.return_value = ['test']
+        with unittest.mock.patch('builtins.print') as print_mock:
+            # Act
+            _single_request(service, namespace)
+            
+            # Assert
+            print_mock.assert_called_once_with('test')
