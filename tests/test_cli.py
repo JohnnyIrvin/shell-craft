@@ -7,7 +7,8 @@ import pytest
 
 from shell_craft.cli.main import (AggregateConfiguration, _generate_service,
                                   _get_configuration, _get_prompt,
-                                  _get_sub_prompt_name, _single_request)
+                                  _get_sub_prompt_name, _interactive,
+                                  _single_request)
 from shell_craft.prompts.languages import BASH_PROMPT
 
 
@@ -162,3 +163,28 @@ def test_single_request_prints_response(namespace: Namespace):
             
             # Assert
             print_mock.assert_called_once_with('test')
+
+def test_interactive_mode_prints_results(namespace: Namespace):
+    """
+    Tests that the interactive mode prints the results.
+    """
+    # Arrange
+    service = _generate_service(namespace)
+    with unittest.mock.patch.object(service, 'query') as service_mock:
+        service_mock.return_value = ['ls']
+        with unittest.mock.patch('builtins.input') as input_mock:
+            input_mock.side_effect = ['ls', 'n', 'exit']
+            with unittest.mock.patch('builtins.print') as print_mock:
+                # Act
+                _interactive(service)
+                
+                # Assert
+                print_mock.assert_has_calls(
+                    [
+                        unittest.mock.call("Welcome to Shell Craft interactive mode."),
+                        unittest.mock.call("Type 'exit' or Ctrl+C to exit the program."),
+                        unittest.mock.call(),
+                        unittest.mock.call("ls"),
+                        unittest.mock.call(),
+                    ]
+                )
