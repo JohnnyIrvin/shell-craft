@@ -20,7 +20,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import os
 import pathlib
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
+from typing import Optional, Union
 
 from shell_craft.cli.github import GitHubArguments
 from shell_craft.configuration import AggregateConfiguration
@@ -83,14 +84,83 @@ def get_github_url_or_error(prompt: str, repository: str) -> str:
         )
     except Exception:
         return "Error: Unable to generate GitHub URL."
+    
+def _get_sub_prompt_name(args: Union[Namespace, dict]) -> Optional[str]:
+    """
+    Returns the name of the sub-prompt.
 
+    Args:
+        args (Union[Namespace, dict]): The arguments to parse. Should be a
+            Namespace or a dictionary.
+
+    Returns:
+        Optional[str]: The name of the sub-prompt.
+    """
+    _getattr = lambda key, default: getattr(args, key, default)
+    _get = lambda key, default: (
+        _getattr(key, default)
+        if isinstance(args, Namespace)
+        else args.get(key, default)
+    )
+    
+    if _get("refactor", False):
+        return "refactor"
+    elif _get("document", False):
+        return "document"
+    elif _get("test", False):
+        return "test"
+    
+    return None
+    
+def _get_prompt(prompt_name: str, sub_prompt_name: Optional[str] = None) -> str:
+    """
+    Returns the prompt to use for the CLI.
+
+    Args:
+        prompt_name (str): The name of the prompt.
+        sub_prompt_name (str): The name of the sub-prompt, defaults to None.
+
+    Returns:
+        str: The prompt to use for the CLI.
+    """
+    subprompts = {
+        "refactor": "refactoring",
+        "document": "documentation",
+        "test": "testing",
+    }
+    
+    prompt = PromptFactory.get_prompt(prompt_name)
+    
+    if sub_prompt_name:
+        prompt = getattr(prompt, subprompts[sub_prompt_name])
+        
+    return prompt.messages
+
+def _generate_service(args: Namespace) -> OpenAIService:
+    """
+    Generates the OpenAI service for the CLI.
+
+    Args:
+        args (Namespace): The arguments to generate the service with.
+
+    Returns:
+        OpenAIService: The OpenAI service for the CLI.
+    """
+    return OpenAIService(
+        OpenAISettings(
+            api_key=args.api_key,
+            model=args.model,
+            count=args.count,
+            temperature=args.temperature,
+            messages=_get_prompt(args.prompt, _get_sub_prompt_name(args)),
+        )
+    )
 
 def main():
     """
     Main function that processes the command-line arguments and queries the
     OpenAI API using shell_craft.
     """
-    config = _get_configuration()
     args = get_arguments(
         initialize_parser(
             ArgumentParser(
@@ -99,29 +169,11 @@ def main():
                 add_help=False
             ),
             commands=_COMMANDS,
-            configuration=config
+            configuration=_get_configuration()
         ),
     )
-    prompt = PromptFactory.get_prompt(args.prompt)
-
-    if getattr(args, "refactor", False):
-        prompt = prompt.refactoring
-    elif getattr(args, "document", False):
-        prompt = prompt.documentation
-    elif getattr(args, "test", False):
-        prompt = prompt.testing
-
-    results = OpenAIService(
-        OpenAISettings(
-            api_key=args.api_key,
-            model=args.model,
-            count=args.count,
-            temperature=args.temperature,
-            messages=prompt.messages,
-        )
-    ).query(
-        message=' '.join(args.request),
-    )
+    
+    results = _generate_service(args).query(message=' '.join(args.request))
 
     github_url = getattr(args, "github", None)
     for _, r in enumerate(results):
