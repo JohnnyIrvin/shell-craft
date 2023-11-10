@@ -20,6 +20,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import os
 import pathlib
+import subprocess
 from argparse import ArgumentParser, Namespace
 from typing import Optional, Union
 
@@ -155,8 +156,66 @@ def _generate_service(args: Namespace) -> OpenAIService:
             messages=_get_prompt(args.prompt, _get_sub_prompt_name(args)),
         )
     )
+        
+def _single_request(service: OpenAIService, args: Namespace) -> None:
+    """
+    Handles a single request.
 
-def main():
+    Args:
+        service (OpenAIService): The OpenAI service to use.
+        args (Namespace): The arguments to use.
+    """
+    results = service.query(message=' '.join(args.request))
+    
+    github_url = getattr(args, "github", None)
+    for _, r in enumerate(results):
+        if github_url:
+            print(get_github_url_or_error(r, github_url))
+        else:
+            print(r)
+
+def _interactive(service: OpenAIService, shell: str = "bash") -> None:
+    """
+    Handles an interactive session.
+    
+    ..  warning::
+    
+        Interactive mode does not store the history of the session. This means
+        that the model will not be able to learn from the previous messages.
+        Which is different from how ChatGPT or other LLM models handle threads.
+
+    :param service: The OpenAI service to use.
+    :type service: OpenAIService
+    """    
+    print("Welcome to Shell Craft interactive mode.")
+    print("Type 'exit' or Ctrl+C to exit the program.")
+    print()
+    
+    while True:
+        try:
+            message = input(">>> ")
+            
+            if message == "exit":
+                break
+            
+            results = service.query(message=message)[0]
+            print(results)
+            
+            print()
+            if input("Execute? (y/n) ").lower() == "y":
+                results = subprocess.run(
+                    f'{shell} -c "{results}"',
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    shell=True
+                )
+                print(results.stdout.decode("utf-8"))
+    
+        except KeyboardInterrupt:
+            print()
+            break
+    
+def main() -> None:
     """
     Main function that processes the command-line arguments and queries the
     OpenAI API using shell_craft.
@@ -173,11 +232,10 @@ def main():
         ),
     )
     
-    results = _generate_service(args).query(message=' '.join(args.request))
-
-    github_url = getattr(args, "github", None)
-    for _, r in enumerate(results):
-        if github_url:
-            print(get_github_url_or_error(r, github_url))
-        else:
-            print(r)
+    service = _generate_service(args)
+    
+    if args.interactive:
+        shell = "powershell" if args.prompt == "powershell" else "bash"
+        _interactive(service, shell)
+    else:
+        _single_request(service, args)
