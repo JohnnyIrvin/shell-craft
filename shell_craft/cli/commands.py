@@ -58,12 +58,29 @@ class CommandGroup:
     exclusive: Optional[bool] = False
 
 _COMMANDS = [
-    Command(
-        flags=['request'],
-        type=str,
-        action='store',
-        help='The request to make.',
-        nargs='*',
+    CommandGroup(
+        name="prompt_input",
+        commands=[
+            Command(
+                flags=['request'],
+                type=str,
+                action='store',
+                help='The request to make.',
+                nargs='*',
+                default=[],
+            ),
+            Command(
+                flags=['--interactive'],
+                dest='interactive',
+                action='store_true',
+                help='Run in interactive mode until the user exits using Ctrl+D. (EOF)',
+                restrictions={
+                    CommandRestriction.PROMPT_NAME: ['BASH_PROMPT',
+                                                     'POWERSHELL_PROMPT']
+                }
+            ),
+        ],
+        exclusive=True
     ),
     Command(
         flags=['--api-key'],
@@ -136,7 +153,8 @@ _COMMANDS = [
         action='store',
         help='The URL to the GitHub repository to open an issue or feature request for.',
         restrictions={
-            CommandRestriction.PROMPT_NAME: ['BUG_REPORT_PROMPT', 'FEATURE_REQUEST_PROMPT']
+            CommandRestriction.PROMPT_NAME: ['BUG_REPORT_PROMPT',
+                                             'FEATURE_REQUEST_PROMPT']
         }
     ),
     CommandGroup(
@@ -162,7 +180,7 @@ _COMMANDS = [
             CommandRestriction.PROMPT_TYPE: ['LanguagePrompt']
         },
         exclusive=True
-    ),
+    ),   
     Command(
         flags=['--help'],
         action='help',
