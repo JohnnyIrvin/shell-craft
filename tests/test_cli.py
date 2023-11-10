@@ -7,8 +7,8 @@ import pytest
 
 from shell_craft.cli.main import (AggregateConfiguration, _generate_service,
                                   _get_configuration, _get_sub_prompt_name)
-from shell_craft.services.openai import OpenAIService, OpenAISettings
 from shell_craft.prompts.languages import BASH_PROMPT
+
 
 @pytest.fixture
 def namespace() -> Namespace:
@@ -49,6 +49,23 @@ def test_get_configuration(path: str):
     ) as mock:
         _get_configuration()
         assert expand(path) in mock.call_args.args[0]
+        
+def test_configuration_expands_shell_craft_env_var():
+    """
+    Tests that the configuration is loaded correctly.
+    """
+    expand = lambda path: pathlib.Path(path).expanduser().absolute().as_posix()
+    with unittest.mock.patch.object(
+        AggregateConfiguration,
+        'from_files',
+        return_value={'test': 'test'}
+    ) as mock:
+        with unittest.mock.patch.dict(
+            'os.environ',
+            {'SHELLCRAFT_CONFIG': '~/.shell-craft/config.json'}
+        ):
+            _get_configuration()
+            assert expand('~/.shell-craft/config.json') in mock.call_args.args[0]
 
 @pytest.mark.parametrize(
     "args, expected",
