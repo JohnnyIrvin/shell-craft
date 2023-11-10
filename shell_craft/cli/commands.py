@@ -73,7 +73,7 @@ _COMMANDS = [
                 flags=['--interactive'],
                 dest='interactive',
                 action='store_true',
-                help='Run in interactive mode until the user exits using Ctrl+D. (EOF)',
+                help='Run in interactive mode until the user exits.',
                 restrictions={
                     CommandRestriction.PROMPT_NAME: ['BASH_PROMPT',
                                                      'POWERSHELL_PROMPT']
