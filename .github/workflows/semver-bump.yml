@@ -68,6 +68,6 @@ jobs:
         with:
           tag_name: v${{ env.NEW_VERSION }}
           body: ${{ env.CHANGELOG }}
-          prerelease: true
+          prerelease: false
         if: ${{ env.NEW_VERSION != env.VERSION }}
         
