@@ -215,6 +215,10 @@ def _interactive(service: OpenAIService, shell: str = "bash") -> None:
         except KeyboardInterrupt:
             print()
             break
+        except EOFError:
+            print()
+            break
+            
     
 def main() -> None:
     """
