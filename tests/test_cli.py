@@ -67,6 +67,23 @@ def test_configuration_expands_shell_craft_env_var():
             _get_configuration()
             assert expand('~/.shell-craft/config.json') in mock.call_args.args[0]
 
+def test_configuration_expands_xdg_home_env_var():
+    """
+    Tests that the configuration is loaded correctly.
+    """
+    expand = lambda path: pathlib.Path(path).expanduser().absolute().as_posix()
+    with unittest.mock.patch.object(
+        AggregateConfiguration,
+        'from_files',
+        return_value={'test': 'test'}
+    ) as mock:
+        with unittest.mock.patch.dict(
+            'os.environ',
+            {'XDG_CONFIG_HOME': '~/.config'}
+        ):
+            _get_configuration()
+            assert expand('~/.config/shell-craft/config.json') in mock.call_args.args[0]
+
 @pytest.mark.parametrize(
     "args, expected",
     [
